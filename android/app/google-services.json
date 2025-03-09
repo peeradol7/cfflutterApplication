@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "785806298572",
+    "project_id": "famcare-14987",
+    "storage_bucket": "famcare-14987.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:785806298572:android:c3f1176a3e07a124fe6169",
+        "android_client_info": {
+          "package_name": "com.example.fam_care"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "785806298572-71m3abnrhd4brprkk8nb1iemfv6i3rp7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.fam_care",
+            "certificate_hash": "2b2ca3f919a03f03e79d0285fdc14d852da23a54"
+          }
+        },
+        {
+          "client_id": "785806298572-6bd2qckidmsr93uu7suctgvmfsegm47a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5hBEIXO0cGT8PJhEGUM-uIalRAidMUrQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "785806298572-6bd2qckidmsr93uu7suctgvmfsegm47a.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "785806298572-s23dtuems1d4v7nlall4jk3i63l3f5ju.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.famCare"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

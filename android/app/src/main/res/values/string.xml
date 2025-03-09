@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">fam_care</string>
+    <string name="facebook_app_id">1694871094772300</string>
+    <string name="fb_login_protocol_scheme">fb1694871094772300</string>
+    <string name="facebook_client_token">623cecd98f0d4ae87aef0dfc9729185c244a6e44f367314b87040a877badbba3</string>
+</resources>

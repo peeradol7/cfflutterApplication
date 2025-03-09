@@ -1,0 +1,2 @@
+/Users/thanaboon/Desktop/Project All/fam_care/android/app/.cxx/Debug/h311y3x4/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/thanaboon/Desktop/Project All/fam_care/android/app/.cxx/Debug/h311y3x4/armeabi-v7a/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,2 @@
+/Users/thanaboon/Desktop/Project All/fam_care/android/app/.cxx/Debug/h311y3x4/x86_64/CMakeFiles/edit_cache.dir
+/Users/thanaboon/Desktop/Project All/fam_care/android/app/.cxx/Debug/h311y3x4/x86_64/CMakeFiles/rebuild_cache.dir
