@@ -29,17 +29,17 @@ class DateFields extends StatelessWidget {
           lastDate: DateTime.now(),
           onDateSelected: onBirthDateChanged,
         ),
-        SizedBox(height: 15),
-        _buildDateField(
-          context: context,
-          controller: periodDateController,
-          label: 'วันเป็นประจำเดือน',
-          hint: 'เลือกวันเป็นประจำเดือนครั้งล่าสุด',
-          icon: Icons.calendar_today,
-          firstDate: DateTime(DateTime.now().year - 1),
-          lastDate: DateTime.now(),
-          onDateSelected: onPeriodDateChanged,
-        ),
+        // SizedBox(height: 15),
+        // _buildDateField(
+        //   context: context,
+        //   controller: periodDateController,
+        //   label: 'วันเป็นประจำเดือน',
+        //   hint: 'เลือกวันเป็นประจำเดือนครั้งล่าสุด',
+        //   icon: Icons.calendar_today,
+        //   firstDate: DateTime(DateTime.now().year - 1),
+        //   lastDate: DateTime.now(),
+        //   onDateSelected: onPeriodDateChanged,
+        // ),
       ],
     );
   }
@@ -93,7 +93,8 @@ class DateFields extends StatelessWidget {
             );
 
             if (pickedDate != null) {
-              controller.text = "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
+              controller.text =
+                  "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
               onDateSelected(pickedDate);
             }
           },

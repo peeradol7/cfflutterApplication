@@ -1,3 +1,4 @@
+import 'package:fam_care/view/calendar_page/calendar_page.dart';
 import 'package:fam_care/view/home_page/home_page.dart';
 import 'package:fam_care/view/home_page/profile_page/profile_page.dart';
 import 'package:fam_care/view/landing_page/langding_page.dart';
@@ -16,7 +17,7 @@ class AppRoutes {
   static const String homePage = '/homePage';
   static const String test = '/test';
   static const String resetPasswordPage = '/reset-password';
-
+  static const String calendarPage = '/calendar';
   static const String profilePage = '/edit-profile';
 
   static final GoRouter router = GoRouter(
@@ -45,6 +46,10 @@ class AppRoutes {
       GoRoute(
         path: resetPasswordPage,
         builder: (context, state) => ResetPasswordPage(),
+      ),
+      GoRoute(
+        path: calendarPage,
+        builder: (context, state) => CalendarPage(),
       ),
       GoRoute(
         path: '$profilePage/:userId',

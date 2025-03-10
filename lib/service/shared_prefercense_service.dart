@@ -20,6 +20,9 @@ class SharedPrefercenseService {
     final userJson = prefs.getString(userKey!);
 
     if (userJson == null) return null;
+
+    print("userJson: $userJson");
+
     return UsersModel.fromJson(jsonDecode(userJson));
   }
 

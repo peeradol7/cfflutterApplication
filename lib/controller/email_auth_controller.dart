@@ -11,6 +11,8 @@ class EmailAuthController extends GetxController {
   final EmailAuthService authService = EmailAuthService();
   final UserController userController = Get.put(UserController());
   final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
   var isLoading = false.obs;
   var userData = Rxn<UsersModel?>(null);
 
@@ -93,7 +95,8 @@ class EmailAuthController extends GetxController {
   }
 
   String _getReadableErrorMessage_Login(String errorMessage) {
-    if (errorMessage.contains("กรุณายืนยันอีเมล") || errorMessage.contains("email verification")) {
+    if (errorMessage.contains("กรุณายืนยันอีเมล") ||
+        errorMessage.contains("email verification")) {
       return "กรุณายืนยันอีเมลก่อนเข้าสู่ระบบ";
     } else if (errorMessage.contains("wrong-password")) {
       return "รหัสผ่านไม่ถูกต้อง";

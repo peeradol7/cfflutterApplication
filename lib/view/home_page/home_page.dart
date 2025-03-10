@@ -1,9 +1,11 @@
+import 'package:fam_care/app_routes.dart';
 import 'package:fam_care/constatnt/app_colors.dart';
 import 'package:fam_care/controller/user_controller.dart';
 import 'package:fam_care/view/home_page/widget/logout_dialog_widget.dart';
 import 'package:fam_care/view/home_page/widget/person_data_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -91,7 +93,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         SizedBox(height: 20),
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            context.push(AppRoutes.calendarPage);
+                          },
                           child: Container(
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),

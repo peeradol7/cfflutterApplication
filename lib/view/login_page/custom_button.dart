@@ -13,14 +13,14 @@ class CustomButton {
   }
 
   Widget btnSignUp({
-    required VoidCallback onPressed,
+    required void Function()? onPressed, // Nullable function
     required String label,
     String? iconPath,
     double iconWidth = 30,
     double iconHeight = 30,
   }) {
     return ElevatedButton.icon(
-      onPressed: onPressed,
+      onPressed: onPressed, // Now works with nullable function
       icon: Image.asset(
         iconPath!,
         width: iconWidth,
