@@ -74,7 +74,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       children: [
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            context.push(AppRoutes.selectDiseasePage);
+                          },
                           child: Container(
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),

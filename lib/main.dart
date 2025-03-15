@@ -1,4 +1,6 @@
 import 'package:fam_care/constatnt/app_colors.dart';
+import 'package:fam_care/controller/calendar_controller.dart';
+import 'package:fam_care/controller/disease_controller.dart';
 import 'package:fam_care/controller/email_auth_controller.dart';
 import 'package:fam_care/controller/google_auth_controller.dart';
 import 'package:fam_care/controller/menu_bar_controller.dart';
@@ -16,11 +18,13 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  Get.put(DiseaseController());
+
   Get.put(MenuBarController());
   Get.put(GoogleAuthController());
   Get.put(UserController());
   Get.put(EmailAuthController());
-
+  Get.put(CalendarController());
   runApp(const MyApp());
 }
 

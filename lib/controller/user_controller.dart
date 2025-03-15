@@ -8,7 +8,7 @@ import '../service/user_service.dart';
 
 class UserController extends GetxController {
   final UserService _userService = UserService();
-
+  final prefs = SharedPrefercenseService;
   var userData = Rxn<UsersModel>();
   Rx<UsersModel?> editUserData = Rx<UsersModel?>(null);
 
@@ -96,6 +96,7 @@ class UserController extends GetxController {
         );
 
         userData.value = updatedUser;
+        SharedPrefercenseService.saveUser(updatedUser);
       }
 
       return success;
