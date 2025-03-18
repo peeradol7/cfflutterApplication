@@ -42,7 +42,7 @@ class Recommendation {
   factory Recommendation.fromJson(Map<String, dynamic> json) {
     return Recommendation(
       id: json['id'] as String,
-      attribute: json['attribute'] as String,
+      attribute: json['attibute'] as String,
       recommendLevel: json['recommendLevel'] as Map<String, dynamic>,
     );
   }
@@ -50,7 +50,7 @@ class Recommendation {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'attribute': attribute,
+      'attibute': attribute,
       'recommendLevel': recommendLevel,
     };
   }

@@ -19,7 +19,6 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   Get.put(DiseaseController());
-
   Get.put(MenuBarController());
   Get.put(GoogleAuthController());
   Get.put(UserController());

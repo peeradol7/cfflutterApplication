@@ -1,6 +1,8 @@
 import 'package:fam_care/view/calendar_page/calendar_page.dart';
+import 'package:fam_care/view/disease/disease_detail_page.dart';
 import 'package:fam_care/view/disease/display_disease_list.dart';
 import 'package:fam_care/view/disease/select_disease_page.dart';
+import 'package:fam_care/view/disease/summary_page.dart';
 import 'package:fam_care/view/home_page/home_page.dart';
 import 'package:fam_care/view/home_page/profile_page/profile_page.dart';
 import 'package:fam_care/view/landing_page/langding_page.dart';
@@ -23,6 +25,8 @@ class AppRoutes {
   static const String profilePage = '/edit-profile';
   static const String selectDiseasePage = '/selectDiseasePage';
   static const String displayDiseaseList = '/displayDiseaseList';
+  static const String diseaseDetail = '/diseaseDetail';
+  static const String summaryPage = '/summary';
   static final GoRouter router = GoRouter(
     initialLocation: landingPage,
     routes: [
@@ -65,6 +69,17 @@ class AppRoutes {
       GoRoute(
         path: displayDiseaseList,
         builder: (context, state) => DisplayDiseaseList(),
+      ),
+      GoRoute(
+        path: summaryPage,
+        builder: (context, state) => SummaryPage(),
+      ),
+      GoRoute(
+        path: '$diseaseDetail/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id'] ?? '';
+          return DiseaseDetailPage(id: id);
+        },
       ),
       GoRoute(
         path: '$profilePage/:userId',
