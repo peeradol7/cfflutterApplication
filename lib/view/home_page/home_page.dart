@@ -114,6 +114,27 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
+                        SizedBox(height: 20),
+                        GestureDetector(
+                          onTap: () {
+                            context.push(AppRoutes.calendarPage);
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                color: AppColors.color5),
+                            width: 300,
+                            height: 100,
+                            child: Center(
+                              child: Text(
+                                'ทำแบบสอบถาม',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),

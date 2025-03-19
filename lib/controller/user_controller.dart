@@ -8,7 +8,7 @@ import '../service/user_service.dart';
 
 class UserController extends GetxController {
   final UserService _userService = UserService();
-  final prefs = SharedPrefercenseService;
+  final SharedPrefercenseService prefs = SharedPrefercenseService();
   var userData = Rxn<UsersModel>();
   Rx<UsersModel?> editUserData = Rx<UsersModel?>(null);
 
@@ -24,7 +24,7 @@ class UserController extends GetxController {
 
   Future<void> loadUserFromPrefs() async {
     isLoading.value = true;
-    final user = await SharedPrefercenseService.getUser();
+    final user = await prefs.getUser();
     if (user != null) {
       userData.value = user;
     }

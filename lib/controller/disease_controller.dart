@@ -13,6 +13,8 @@ class DiseaseController extends GetxController {
       <SelectedRecommendation>[].obs;
   var selectedDiseases = <String>[].obs;
   final _selectedId = Rxn<String>();
+  final RxString selectedSafeMethod = "".obs;
+  final RxString selectedPreferredMethod = "".obs;
   String? get selectedId => _selectedId.value;
   final isSelect = false.obs;
   var isLoading = true.obs;

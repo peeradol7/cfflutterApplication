@@ -12,7 +12,8 @@ class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Future<bool> checkUserData() async {
-      final userData = await SharedPrefercenseService.getUser();
+      final sharedPreferenceService = SharedPrefercenseService();
+      final userData = await sharedPreferenceService.getUser();
       if (userData != null) {
         Future.microtask(() => context.go(AppRoutes.homePage));
         return true;

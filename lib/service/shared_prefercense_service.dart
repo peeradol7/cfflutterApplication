@@ -19,11 +19,11 @@ class SharedPrefercenseService {
     print('User Saved **** $userKey');
   }
 
-  static Future<UsersModel?> getUser() async {
+  Future<UsersModel> getUser() async {
     final prefs = await SharedPreferences.getInstance();
     final userJson = prefs.getString(userKey!);
 
-    if (userJson == null) return null;
+    if (userJson == null) return UsersModel(authMethod: '');
 
     print("userJson: $userJson");
 

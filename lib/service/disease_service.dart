@@ -27,7 +27,6 @@ class DiseaseService {
   Future<DiseaseModel> fetchDiseaseWithRecommendations(
       {required String diseaseId}) async {
     try {
-      // ดึงข้อมูลโรค
       DocumentSnapshot diseaseDoc =
           await _firestore.collection(diseaseCollection).doc(diseaseId).get();
 
@@ -39,7 +38,6 @@ class DiseaseService {
           diseaseDoc.data() as Map<String, dynamic>;
       String type = diseaseData['type'] ?? '';
 
-      // ดึงข้อมูลคำแนะนำ
       QuerySnapshot recommendations = await _firestore
           .collection(diseaseCollection)
           .doc(diseaseId)
