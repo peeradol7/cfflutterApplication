@@ -4,7 +4,7 @@ import 'package:fam_care/model/users_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPrefercenseService {
-  static const String? userKey = "user_data";
+  static const String userKey = "user_data";
 
   Future<void> instance() async {
     SharedPreferences.getInstance();
@@ -19,23 +19,37 @@ class SharedPrefercenseService {
     print('User Saved **** $userKey');
   }
 
-  Future<UsersModel> getUser() async {
+  Future<UsersModel?> getUser() async {
     final prefs = await SharedPreferences.getInstance();
-    final userJson = prefs.getString(userKey!);
+    final userJson = prefs.getString(userKey);
 
-    if (userJson == null) return UsersModel(authMethod: '');
+    if (userJson == null) {
+      print("User data not found in SharedPreferences.");
+      return null;
+    }
 
-    print("userJson: $userJson");
+    try {
+      final userMap = jsonDecode(userJson);
+      final user = UsersModel.fromJson(userMap);
+      if (user.userId == null || user.userId!.isEmpty) {
+        print("User ID is null or empty.");
+        return null;
+      }
 
-    return UsersModel.fromJson(jsonDecode(userJson));
+      print("userJson: $userJson");
+      return user;
+    } catch (e) {
+      print("Error decoding userJson: $e");
+      return null;
+    }
   }
 
-  static Future<void> removeUser() async {
+  Future<void> removeUser() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(userKey!);
+    await prefs.remove(userKey);
   }
 
-  static Future<String?> getUserId() async {
+  Future<String?> getUserId() async {
     final prefs = await SharedPreferences.getInstance();
     final userJson = prefs.getString(userKey!);
 

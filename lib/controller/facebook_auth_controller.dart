@@ -1,36 +1,30 @@
-import 'package:fam_care/service/facebook_auth_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:get/get.dart';
+// class FacebookAuthController extends GetxController {
+//   final FacebookAuthService service = FacebookAuthService();
+//   RxBool isLoading = false.obs;
+//   RxBool isUserExist = false.obs;
+//   var user = Rx<User?>(null);
 
-import '../service/shared_prefercense_service.dart';
+//   Future<UserCredential?> signInWithFacebook() async {
+//     try {
+//       final userCredential = await service.signInWithFacebook();
 
-class FacebookAuthController extends GetxController {
-  final FacebookAuthService service = FacebookAuthService();
-  RxBool isLoading = false.obs;
-  RxBool isUserExist = false.obs;
-  var user = Rx<User?>(null);
+//       if (userCredential != null) {
+//         user.value = userCredential.user;
+//         return userCredential;
+//       } else {
+//         return null;
+//       }
+//     } catch (e) {
+//       print("Error during Facebook login: $e");
+//       return null;
+//     }
+//   }
 
-  Future<UserCredential?> signInWithFacebook() async {
-    try {
-      final userCredential = await service.signInWithFacebook();
+//   bool get isLoggedIn => user.value != null;
 
-      if (userCredential != null) {
-        user.value = userCredential.user;
-        return userCredential;
-      } else {
-        return null;
-      }
-    } catch (e) {
-      print("Error during Facebook login: $e");
-      return null;
-    }
-  }
-
-  bool get isLoggedIn => user.value != null;
-
-  Future<void> signOut() async {
-    await FirebaseAuth.instance.signOut();
-    user.value = null;
-    SharedPrefercenseService.removeUser();
-  }
-}
+//   Future<void> signOut() async {
+//     await FirebaseAuth.instance.signOut();
+//     user.value = null;
+//     SharedPrefercenseService.removeUser();
+//   }
+// }

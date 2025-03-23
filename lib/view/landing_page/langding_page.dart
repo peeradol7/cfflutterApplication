@@ -14,10 +14,14 @@ class LandingPage extends StatelessWidget {
     Future<bool> checkUserData() async {
       final sharedPreferenceService = SharedPrefercenseService();
       final userData = await sharedPreferenceService.getUser();
+
       if (userData != null) {
-        Future.microtask(() => context.go(AppRoutes.homePage));
+        print("User ID: ${userData.userId}");
+        context.go(AppRoutes.homePage);
         return true;
       }
+
+      print("User not found.");
       return false;
     }
 

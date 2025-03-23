@@ -97,7 +97,7 @@ class SummaryController extends GetxController {
       }
 
       final userData = await prefs.getUser();
-      final userId = userData.userId;
+      final userId = userData!.userId;
 
       HistoryModel history = HistoryModel(
         selectedSafeMethod: selectedSafeMethod.value,

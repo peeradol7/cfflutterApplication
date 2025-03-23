@@ -7,11 +7,11 @@ import 'package:fam_care/view/home_page/home_page.dart';
 import 'package:fam_care/view/home_page/profile_page/profile_page.dart';
 import 'package:fam_care/view/landing_page/langding_page.dart';
 import 'package:fam_care/view/login_page/login_page.dart';
-import 'package:fam_care/view/question_page/question_page.dart';
 import 'package:fam_care/view/register_page/register_page.dart';
 import 'package:fam_care/view/register_page/reset_password_page.dart';
-import 'package:fam_care/view/test.dart';
 import 'package:go_router/go_router.dart';
+
+import 'view/survey/test_servey.dart';
 
 class AppRoutes {
   static const String landingPage = '/';
@@ -28,7 +28,8 @@ class AppRoutes {
   static const String displayDiseaseList = '/displayDiseaseList';
   static const String diseaseDetail = '/diseaseDetail';
   static const String summaryPage = '/summary';
-  static const String questionPage = '/question';
+  static const String surveyPage = '/survey';
+
   static final GoRouter router = GoRouter(
     initialLocation: landingPage,
     routes: [
@@ -36,10 +37,10 @@ class AppRoutes {
         path: landingPage,
         builder: (context, state) => LandingPage(),
       ),
-      GoRoute(
-        path: test,
-        builder: (context, state) => SurveyForm(),
-      ),
+      // GoRoute(
+      //   path: test,
+      //   builder: (context, state) => SurveyForm(),
+      // ),
       GoRoute(
         path: loginPage,
         builder: (context, state) => LoginScreen(),
@@ -77,8 +78,8 @@ class AppRoutes {
         builder: (context, state) => SummaryPage(),
       ),
       GoRoute(
-        path: questionPage,
-        builder: (context, state) => QuestionPage(),
+        path: surveyPage,
+        builder: (context, state) => ContraceptionFormPage(),
       ),
       GoRoute(
         path: '$diseaseDetail/:id',

@@ -123,7 +123,7 @@ class UserController extends GetxController {
 
   Future<void> signOut(BuildContext context) async {
     try {
-      SharedPrefercenseService.removeUser();
+      // SharedPrefercenseService.removeUser();
       await FirebaseAuth.instance.signOut();
       userData.value = null;
     } catch (e) {}

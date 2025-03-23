@@ -117,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         SizedBox(height: 20),
                         GestureDetector(
                           onTap: () {
-                            context.push(AppRoutes.calendarPage);
+                            context.push(AppRoutes.surveyPage);
                           },
                           child: Container(
                             decoration: BoxDecoration(
