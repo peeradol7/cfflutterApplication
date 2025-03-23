@@ -1,12 +1,12 @@
 import 'package:fam_care/app_routes.dart';
 import 'package:fam_care/controller/email_auth_controller.dart';
 import 'package:fam_care/model/users_model.dart';
+import 'package:fam_care/view/register_page/widget/date_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../constatnt/app_colors.dart';
-import '../register_page/widget/date_field.dart';
 import '../register_page/widget/dialogs.dart';
 import '../register_page/widget/email_field.dart';
 import '../register_page/widget/name_field.dart';
@@ -42,8 +42,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void _register() {
     if (_formKey.currentState!.validate()) {
-      if (_birthDate == null || _periodDate == null) {
-        showErrorDialog(context, "กรุณาเลือกวันเกิดและวันเป็นประจำเดือน");
+      if (_birthDate == null) {
+        showErrorDialog(context, "กรุณาเลือกวันเกิด");
         return;
       }
 

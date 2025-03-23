@@ -1,8 +1,9 @@
 import 'dart:io';
 
+import 'package:fam_care/constatnt/app_colors.dart';
+import 'package:fam_care/constatnt/survey_constants.dart';
 import 'package:fam_care/controller/user_controller.dart';
 import 'package:fam_care/service/shared_prefercense_service.dart';
-import 'package:fam_care/view/survey/const.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:open_file/open_file.dart';
@@ -40,11 +41,11 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
   @override
   void initState() {
     super.initState();
-    initTextControllers(ContraceptionSurveyConstants.GENERAL_INFO);
-    initTextControllers(ContraceptionSurveyConstants.HEALTH_INFO);
-    initTextControllers(ContraceptionSurveyConstants.PLANNING_INFO);
-    initTextControllers(ContraceptionSurveyConstants.KNOWLEDGE_INFO);
-    initTextControllers(ContraceptionSurveyConstants.PERSONAL_OPINION);
+    initTextControllers(SurveyConstants.GENERAL_INFO);
+    initTextControllers(SurveyConstants.HEALTH_INFO);
+    initTextControllers(SurveyConstants.PLANNING_INFO);
+    initTextControllers(SurveyConstants.KNOWLEDGE_INFO);
+    initTextControllers(SurveyConstants.PERSONAL_OPINION);
     _initialLoadFuture = loadInitialData();
   }
 
@@ -88,7 +89,7 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
         } else {
           return Scaffold(
               appBar: AppBar(
-                title: Text(ContraceptionSurveyConstants.FORM_TITLE),
+                title: Text(SurveyConstants.FORM_TITLE),
               ),
               body: SingleChildScrollView(
                 child: Padding(
@@ -96,47 +97,34 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildSectionTitle(
-                          ContraceptionSurveyConstants.SECTION_1_TITLE),
-                      buildSectionAge(ContraceptionSurveyConstants.GENERAL_INFO,
-                          generalAnswers),
+                      _buildSectionTitle(SurveyConstants.SECTION_1_TITLE),
+                      buildSectionAge(
+                          SurveyConstants.GENERAL_INFO, generalAnswers),
                       SizedBox(height: 20),
-                      _buildSectionTitle(
-                          ContraceptionSurveyConstants.SECTION_2_TITLE),
-                      _buildSection(ContraceptionSurveyConstants.HEALTH_INFO,
-                          healthAnswers),
+                      _buildSectionTitle(SurveyConstants.SECTION_2_TITLE),
+                      _buildSection(SurveyConstants.HEALTH_INFO, healthAnswers),
                       SizedBox(height: 20),
-                      _buildSectionTitle(
-                          ContraceptionSurveyConstants.SECTION_3_TITLE),
-                      _buildSection(ContraceptionSurveyConstants.PLANNING_INFO,
-                          planningAnswers),
-                      SizedBox(height: 20),
-                      _buildSectionTitle(
-                          ContraceptionSurveyConstants.SECTION_4_TITLE),
-                      _buildSection(ContraceptionSurveyConstants.KNOWLEDGE_INFO,
-                          knowledgeAnswers),
-                      SizedBox(height: 20),
-                      _buildSectionTitle(
-                          ContraceptionSurveyConstants.SECTION_5_TITLE),
+                      _buildSectionTitle(SurveyConstants.SECTION_3_TITLE),
                       _buildSection(
-                          ContraceptionSurveyConstants.CONVENIENCE_INFO,
-                          convenienceAnswers),
+                          SurveyConstants.PLANNING_INFO, planningAnswers),
                       SizedBox(height: 20),
-                      _buildSectionTitle(
-                          ContraceptionSurveyConstants.SECTION_6_TITLE),
+                      _buildSectionTitle(SurveyConstants.SECTION_4_TITLE),
                       _buildSection(
-                          ContraceptionSurveyConstants.RISK_INFO, riskAnswers),
+                          SurveyConstants.KNOWLEDGE_INFO, knowledgeAnswers),
                       SizedBox(height: 20),
-                      _buildSectionTitle(
-                          ContraceptionSurveyConstants.SECTION_7_TITLE),
+                      _buildSectionTitle(SurveyConstants.SECTION_5_TITLE),
                       _buildSection(
-                          ContraceptionSurveyConstants.PERSONAL_OPINION,
-                          opinionAnswers),
+                          SurveyConstants.CONVENIENCE_INFO, convenienceAnswers),
                       SizedBox(height: 20),
-                      _buildSectionTitle(
-                          ContraceptionSurveyConstants.SECTION_8_TITLE),
+                      _buildSectionTitle(SurveyConstants.SECTION_6_TITLE),
+                      _buildSection(SurveyConstants.RISK_INFO, riskAnswers),
+                      SizedBox(height: 20),
+                      _buildSectionTitle(SurveyConstants.SECTION_7_TITLE),
                       _buildSection(
-                          ContraceptionSurveyConstants.EXPERT_CONSULTATION,
+                          SurveyConstants.PERSONAL_OPINION, opinionAnswers),
+                      SizedBox(height: 20),
+                      _buildSectionTitle(SurveyConstants.SECTION_8_TITLE),
+                      _buildSection(SurveyConstants.EXPERT_CONSULTATION,
                           consultationAnswers),
                       SizedBox(height: 30),
                       Center(
@@ -144,7 +132,7 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
                           onPressed: () {
                             generateAndOpenPDF(context);
                           },
-                          child: Text(ContraceptionSurveyConstants.PDF_BUTTON),
+                          child: Text(SurveyConstants.PDF_BUTTON),
                           style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.symmetric(
                                 horizontal: 40, vertical: 15),
@@ -224,18 +212,15 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
 
         if (data['type'] == 'text') {
           String answer = '';
-          if (sectionData == ContraceptionSurveyConstants.GENERAL_INFO) {
+          if (sectionData == SurveyConstants.GENERAL_INFO) {
             answer = generalAnswers[key] ?? '';
-          } else if (sectionData == ContraceptionSurveyConstants.HEALTH_INFO) {
+          } else if (sectionData == SurveyConstants.HEALTH_INFO) {
             answer = healthAnswers[key] ?? '';
-          } else if (sectionData ==
-              ContraceptionSurveyConstants.PLANNING_INFO) {
+          } else if (sectionData == SurveyConstants.PLANNING_INFO) {
             answer = planningAnswers[key] ?? '';
-          } else if (sectionData ==
-              ContraceptionSurveyConstants.KNOWLEDGE_INFO) {
+          } else if (sectionData == SurveyConstants.KNOWLEDGE_INFO) {
             answer = knowledgeAnswers[key] ?? '';
-          } else if (sectionData ==
-              ContraceptionSurveyConstants.PERSONAL_OPINION) {
+          } else if (sectionData == SurveyConstants.PERSONAL_OPINION) {
             answer = opinionAnswers[key] ?? '';
           }
 
@@ -299,6 +284,17 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
               ),
             );
           }
+        } else if (data['type'] == 'dropdown') {
+          String answer = answers[key] ?? 'ไม่ได้ระบุ';
+          fields.add(
+            pw.Padding(
+              padding: const pw.EdgeInsets.only(left: 16.0, bottom: 10.0),
+              child: pw.Text(
+                'คำตอบ: $answer',
+                style: pw.TextStyle(font: font, fontSize: 12),
+              ),
+            ),
+          );
         }
       }
     });
@@ -450,7 +446,6 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
       }
 
       if (shouldDisplay) {
-        // Dynamically update the label for the 'age' field
         String labelText = data['label'];
 
         fields.add(
@@ -478,20 +473,16 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
                 ),
                 onChanged: (value) {
                   setState(() {
-                    if (sectionData ==
-                        ContraceptionSurveyConstants.GENERAL_INFO) {
+                    if (sectionData == SurveyConstants.GENERAL_INFO) {
                       generalAnswers[key] = value;
-                    } else if (sectionData ==
-                        ContraceptionSurveyConstants.HEALTH_INFO) {
+                    } else if (sectionData == SurveyConstants.HEALTH_INFO) {
                       healthAnswers[key] = value;
-                    } else if (sectionData ==
-                        ContraceptionSurveyConstants.PLANNING_INFO) {
+                    } else if (sectionData == SurveyConstants.PLANNING_INFO) {
                       planningAnswers[key] = value;
-                    } else if (sectionData ==
-                        ContraceptionSurveyConstants.KNOWLEDGE_INFO) {
+                    } else if (sectionData == SurveyConstants.KNOWLEDGE_INFO) {
                       knowledgeAnswers[key] = value;
                     } else if (sectionData ==
-                        ContraceptionSurveyConstants.PERSONAL_OPINION) {
+                        SurveyConstants.PERSONAL_OPINION) {
                       opinionAnswers[key] = value;
                     }
                   });
@@ -525,6 +516,34 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
               ),
             );
           }
+        } else if (data['type'] == 'dropdown') {
+          fields.add(
+            Container(
+              decoration: BoxDecoration(border: Border.all()),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16.0, bottom: 16.0),
+                child: DropdownButton<String>(
+                  dropdownColor: AppColors.secondary,
+                  iconEnabledColor: AppColors.color5,
+
+                  isExpanded: true, // ทำให้ dropdown ขยายเต็มความกว้าง
+                  value: answers[key], // ค่าที่เลือกใน dropdown
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      answers[key] = newValue; // อัปเดตคำตอบเมื่อเลือก
+                    });
+                  },
+                  items: data['options']
+                      .map<DropdownMenuItem<String>>((String option) {
+                    return DropdownMenuItem<String>(
+                      value: option, // ค่าของตัวเลือก
+                      child: Text(option), // ข้อความที่แสดงใน dropdown
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+          );
         } else if (data['type'] == 'checkbox' ||
             data['type'] == 'checkbox_limited') {
           int maxSelection =
@@ -535,7 +554,7 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
               Padding(
                 padding: const EdgeInsets.only(left: 16.0, bottom: 8.0),
                 child: Text(
-                  ContraceptionSurveyConstants.SELECTED_COUNT
+                  SurveyConstants.SELECTED_COUNT
                       .replaceAll(
                           '{count}',
                           multipleSelectionAnswers[key]?.length.toString() ??
@@ -571,8 +590,7 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                    ContraceptionSurveyConstants
-                                        .MAX_SELECTION_WARNING
+                                    SurveyConstants.MAX_SELECTION_WARNING
                                         .replaceAll(
                                             '{max}', maxSelection.toString()),
                                   ),
@@ -622,35 +640,33 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
             pw.Header(
               level: 0,
               child: pw.Text(
-                ContraceptionSurveyConstants.FORM_TITLE,
+                SurveyConstants.FORM_TITLE,
                 style: pw.TextStyle(font: boldFont, fontSize: 20),
               ),
             ),
             pw.SizedBox(height: 20),
 
             _buildPdfSection(
-              ContraceptionSurveyConstants.SECTION_1_TITLE,
-              ContraceptionSurveyConstants.GENERAL_INFO,
+              SurveyConstants.SECTION_1_TITLE,
+              SurveyConstants.GENERAL_INFO,
               generalAnswers,
               font,
               boldFont,
             ),
             pw.SizedBox(height: 20),
 
-            // ส่วนที่ 2: สุขภาพทั่วไป
             _buildPdfSection(
-              ContraceptionSurveyConstants.SECTION_2_TITLE,
-              ContraceptionSurveyConstants.HEALTH_INFO,
+              SurveyConstants.SECTION_2_TITLE,
+              SurveyConstants.HEALTH_INFO,
               healthAnswers,
               font,
               boldFont,
             ),
             pw.SizedBox(height: 20),
 
-            // ส่วนที่ 3: การวางแผนคุมกำเนิด
             _buildPdfSection(
-              ContraceptionSurveyConstants.SECTION_3_TITLE,
-              ContraceptionSurveyConstants.PLANNING_INFO,
+              SurveyConstants.SECTION_3_TITLE,
+              SurveyConstants.PLANNING_INFO,
               planningAnswers,
               font,
               boldFont,
@@ -660,8 +676,8 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
 
             // ส่วนที่ 4: ความรู้เกี่ยวกับวิธีการคุมกำเนิด
             _buildPdfSection(
-              ContraceptionSurveyConstants.SECTION_4_TITLE,
-              ContraceptionSurveyConstants.KNOWLEDGE_INFO,
+              SurveyConstants.SECTION_4_TITLE,
+              SurveyConstants.KNOWLEDGE_INFO,
               knowledgeAnswers,
               font,
               boldFont,
@@ -670,8 +686,8 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
 
             // ส่วนที่ 5: ความสะดวกสบายและความสม่ำเสมอในการใช้
             _buildPdfSection(
-              ContraceptionSurveyConstants.SECTION_5_TITLE,
-              ContraceptionSurveyConstants.CONVENIENCE_INFO,
+              SurveyConstants.SECTION_5_TITLE,
+              SurveyConstants.CONVENIENCE_INFO,
               convenienceAnswers,
               font,
               boldFont,
@@ -680,8 +696,8 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
 
             // ส่วนที่ 6: ความต้องการในอนาคตและความเสี่ยง
             _buildPdfSection(
-              ContraceptionSurveyConstants.SECTION_6_TITLE,
-              ContraceptionSurveyConstants.RISK_INFO,
+              SurveyConstants.SECTION_6_TITLE,
+              SurveyConstants.RISK_INFO,
               riskAnswers,
               font,
               boldFont,
@@ -690,8 +706,8 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
 
             // ส่วนที่ 7: ความคิดเห็นส่วนตัว
             _buildPdfSection(
-              ContraceptionSurveyConstants.SECTION_7_TITLE,
-              ContraceptionSurveyConstants.PERSONAL_OPINION,
+              SurveyConstants.SECTION_7_TITLE,
+              SurveyConstants.PERSONAL_OPINION,
               opinionAnswers,
               font,
               boldFont,
@@ -700,10 +716,9 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
             pw.SizedBox(height: 20),
             pw.SizedBox(height: 20),
 
-            // ส่วนที่ 8: การปรึกษาผู้เชี่ยวชาญ
             _buildPdfSection(
-              ContraceptionSurveyConstants.SECTION_8_TITLE,
-              ContraceptionSurveyConstants.EXPERT_CONSULTATION,
+              SurveyConstants.SECTION_8_TITLE,
+              SurveyConstants.EXPERT_CONSULTATION,
               consultationAnswers,
               font,
               boldFont,
@@ -714,13 +729,12 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
     );
 
     final output = await getTemporaryDirectory();
-    final file =
-        File('${output.path}/${ContraceptionSurveyConstants.PDF_FILENAME}');
+    final file = File('${output.path}/${SurveyConstants.PDF_FILENAME}');
     await file.writeAsBytes(await pdf.save());
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(ContraceptionSurveyConstants.PDF_SUCCESS),
+        content: Text(SurveyConstants.PDF_SUCCESS),
         duration: Duration(seconds: 2),
       ),
     );

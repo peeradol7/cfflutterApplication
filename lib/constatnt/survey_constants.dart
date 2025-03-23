@@ -1,11 +1,11 @@
 import 'package:fam_care/controller/user_controller.dart';
 import 'package:get/get.dart';
 
-class ContraceptionSurveyConstants {
+class SurveyConstants {
   static const String FORM_TITLE = 'แบบสอบถามการคุมกำเนิด';
   static const String PDF_BUTTON = 'สร้าง PDF';
   static const String PDF_SUCCESS = 'สร้าง PDF สำเร็จ';
-  static const String PDF_FILENAME = 'contraception_survey.pdf';
+  static const String PDF_FILENAME = 'survey.pdf';
   final controler = Get.put(UserController());
 
   static const String SECTION_1_TITLE = '1. ข้อมูลทั่วไป';
@@ -196,7 +196,17 @@ class ContraceptionSurveyConstants {
     },
     'interested_method': {
       'label': 'คุณสนใจวิธีคุมกำเนิดวิธีใด:',
-      'type': 'text',
+      'type': 'dropdown',
+      'options': [
+        'ยาคุมกำเนิดชนิดรับประทาน',
+        'ถุงยางอนามัย',
+        'การฝังยาคุมกำเนิด',
+        'การฉีดยาคุมกำเนิด',
+        'การใส่ห่วงอนามัย',
+        'การทำหมัน',
+        'วิธีธรรมชาติ',
+        'อื่นๆ:'
+      ],
     },
   };
 
