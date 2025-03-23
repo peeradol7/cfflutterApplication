@@ -65,34 +65,6 @@ class DiseaseDetailCard extends StatelessWidget {
                           ),
                         ),
                         Divider(),
-                        // for (var entry in selection.recommendLevels.entries)
-                        //   Padding(
-                        //     padding: EdgeInsets.only(bottom: 8),
-                        //     child: Row(
-                        //       crossAxisAlignment: CrossAxisAlignment.start,
-                        //       children: [
-                        //         Container(
-                        //           width: 60,
-                        //           child: Text(
-                        //             "${entry.key}:",
-                        //             style: TextStyle(
-                        //               fontWeight: FontWeight.w500,
-                        //               fontSize: 14,
-                        //             ),
-                        //           ),
-                        //         ),
-                        //         SizedBox(width: 8),
-                        //         Expanded(
-                        //           child: Text(
-                        //             "${entry.value}",
-                        //             style: TextStyle(
-                        //               fontSize: 14,
-                        //             ),
-                        //           ),
-                        //         ),
-                        //       ],
-                        //     ),
-                        //   ),
                       ],
                     ),
                   ),

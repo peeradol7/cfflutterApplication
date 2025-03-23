@@ -11,6 +11,7 @@ class DiseaseController extends GetxController {
   var diseaseType = ''.obs;
   final RxList<SelectedRecommendation> savedRecommendations =
       <SelectedRecommendation>[].obs;
+
   var selectedDiseases = <String>[].obs;
   final _selectedId = Rxn<String>();
   final RxString selectedSafeMethod = "".obs;
@@ -26,6 +27,36 @@ class DiseaseController extends GetxController {
   void onInit() {
     fetchDisease();
     super.onInit();
+  }
+
+  void saveSelectedRecommendation(String diseaseId) {
+    SelectedRecommendation selection = getSelectedRecommendation(diseaseId);
+    print('Saving recommendation for disease: ${selection.diseaseType}');
+    print('Disease ID: ${selection.diseaseId}');
+    print('Number of selections: ${selection.selections.length}');
+
+    print('Selected recommendation details:');
+    for (var sel in selection.selections) {
+      print('  Attribute: ${sel.attribute}');
+      print('  RecommendationID: ${sel.recommendationId}');
+      print('  RecommendLevels: ${sel.recommendLevels}');
+    }
+
+    int existingIndex = savedRecommendations
+        .indexWhere((element) => element.diseaseId == diseaseId);
+
+    if (existingIndex >= 0) {
+      savedRecommendations[existingIndex] = selection;
+      print('Updated existing recommendation at index $existingIndex');
+    } else {
+      savedRecommendations.add(selection);
+      print('Added new recommendation');
+    }
+
+    if (!selectedDiseases.contains(selection.diseaseType)) {
+      selectedDiseases.add(selection.diseaseType);
+      print('Added disease type to selectedDiseases');
+    }
   }
 
   Future<void> fetchDisease() async {
@@ -67,7 +98,6 @@ class DiseaseController extends GetxController {
     }
   }
 
-  // บันทึกค่า recommendLevel ที่เลือก
   void selectRecommendLevel(String recommendationId, String level) {
     selectedLevels[recommendationId] = level;
   }
@@ -134,36 +164,5 @@ class DiseaseController extends GetxController {
     selectedDiseases.remove(diseaseType);
     savedRecommendations
         .removeWhere((element) => element.diseaseType == diseaseType);
-  }
-
-  void saveSelectedRecommendation(String diseaseId) {
-    SelectedRecommendation selection = getSelectedRecommendation(diseaseId);
-    print('Saving recommendation for disease: ${selection.diseaseType}');
-    print('Disease ID: ${selection.diseaseId}');
-    print('Number of selections: ${selection.selections.length}');
-
-    // Debug the selected recommendation
-    print('Selected recommendation details:');
-    for (var sel in selection.selections) {
-      print('  Attribute: ${sel.attribute}');
-      print('  RecommendationID: ${sel.recommendationId}');
-      print('  RecommendLevels: ${sel.recommendLevels}');
-    }
-
-    int existingIndex = savedRecommendations
-        .indexWhere((element) => element.diseaseId == diseaseId);
-
-    if (existingIndex >= 0) {
-      savedRecommendations[existingIndex] = selection;
-      print('Updated existing recommendation at index $existingIndex');
-    } else {
-      savedRecommendations.add(selection);
-      print('Added new recommendation');
-    }
-
-    if (!selectedDiseases.contains(selection.diseaseType)) {
-      selectedDiseases.add(selection.diseaseType);
-      print('Added disease type to selectedDiseases');
-    }
   }
 }

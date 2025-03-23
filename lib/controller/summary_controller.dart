@@ -1,3 +1,4 @@
+import 'package:fam_care/controller/disease_controller.dart';
 import 'package:get/get.dart';
 
 import '../model/disease_object.dart';
@@ -8,14 +9,19 @@ import '../service/shared_prefercense_service.dart';
 class SummaryController extends GetxController {
   final HistoryService _historyService = HistoryService();
   final prefs = SharedPrefercenseService();
+  final DiseaseController diseaseController = Get.put(DiseaseController());
 
   final RxList<SelectedRecommendation> savedRecommendations =
       <SelectedRecommendation>[].obs;
   RxString selectedSafeMethod = "".obs;
   RxString selectedPreferredMethod = "".obs;
+  @override
+  void onInit() {
+    super.onInit();
+  }
 
   List<String> getSafeMethods() {
-    if (savedRecommendations.isEmpty) {
+    if (diseaseController.savedRecommendations.isEmpty) {
       return ["ไม่มีข้อมูล"];
     }
 
@@ -32,7 +38,7 @@ class SummaryController extends GetxController {
     Set<String> addedMethods = {};
     Set<String> excludedMethods = {};
 
-    for (var recommendation in savedRecommendations) {
+    for (var recommendation in diseaseController.savedRecommendations) {
       for (var selection in recommendation.selections) {
         methodNames.forEach((key, name) {
           if (selection.recommendLevels.containsKey(key)) {
@@ -46,8 +52,7 @@ class SummaryController extends GetxController {
       }
     }
 
-    // Second pass: add methods with category 1 or 2 that aren't excluded
-    for (var recommendation in savedRecommendations) {
+    for (var recommendation in diseaseController.savedRecommendations) {
       for (var selection in recommendation.selections) {
         methodNames.forEach((key, name) {
           if (selection.recommendLevels.containsKey(key)) {
@@ -118,7 +123,11 @@ class SummaryController extends GetxController {
   Map<String, List<String>> getUniqueDiseaseAttributes() {
     Map<String, List<String>> uniqueDiseaseAttributes = {};
 
-    for (var recommendation in savedRecommendations) {
+    print("🔍 กำลังโหลดข้อมูลจาก savedRecommendations...");
+
+    for (var recommendation in diseaseController.savedRecommendations) {
+      print("📌 เจอโรค: ${recommendation.diseaseType}");
+
       String diseaseType = recommendation.diseaseType;
 
       if (!uniqueDiseaseAttributes.containsKey(diseaseType)) {
@@ -126,6 +135,8 @@ class SummaryController extends GetxController {
       }
 
       for (var selection in recommendation.selections) {
+        print("   ✅ Attribute: ${selection.attribute}");
+
         if (!uniqueDiseaseAttributes[diseaseType]!
             .contains(selection.attribute)) {
           uniqueDiseaseAttributes[diseaseType]!.add(selection.attribute);
@@ -133,22 +144,28 @@ class SummaryController extends GetxController {
       }
     }
 
+    print("🎯 ข้อมูลที่ได้: $uniqueDiseaseAttributes");
     return uniqueDiseaseAttributes;
   }
 
   Map<String, Map<String, String>> getMethodValues() {
     Map<String, Map<String, String>> methodValues = {};
 
-    for (var recommendation in savedRecommendations) {
+    print("🔍 กำลังโหลด method values จาก savedRecommendations...");
+
+    for (var recommendation in diseaseController.savedRecommendations) {
+      print("📌 โรค: ${recommendation.diseaseType}");
+
       String diseaseType = recommendation.diseaseType;
 
       for (var selection in recommendation.selections) {
         String key = "$diseaseType-${selection.attribute}";
+        print("   🔹 Attribute: ${selection.attribute}");
+
         if (!methodValues.containsKey(key)) {
           methodValues[key] = {};
         }
 
-        // Add values for all method keys
         ["first", "second", "third", "four", "five", "six"]
             .forEach((methodKey) {
           if (selection.recommendLevels.containsKey(methodKey)) {

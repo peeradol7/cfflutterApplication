@@ -12,7 +12,6 @@ class SurveyConstants {
   static const Map<String, dynamic> GENERAL_INFO = {
     'age': {
       'label': 'อายุ: ปี',
-      // 'type': 'text',
     },
     'marital_status': {
       'label': 'สถานภาพการสมรส:',
@@ -31,7 +30,6 @@ class SurveyConstants {
     },
   };
 
-  // ส่วนที่ 2: สุขภาพทั่วไป
   static const String SECTION_2_TITLE = '2. สุขภาพทั่วไป';
   static const Map<String, dynamic> HEALTH_INFO = {
     'health_issues': {
@@ -53,7 +51,6 @@ class SurveyConstants {
     },
   };
 
-  // ส่วนที่ 3: การวางแผนคุมกำเนิด
   static const String SECTION_3_TITLE = '3. การวางแผนคุมกำเนิด';
   static const Map<String, dynamic> PLANNING_INFO = {
     'plan_contraception': {
@@ -92,7 +89,6 @@ class SurveyConstants {
     },
   };
 
-  // ส่วนที่ 4: ความรู้เกี่ยวกับวิธีการคุมกำเนิด
   static const String SECTION_4_TITLE = '4. ความรู้เกี่ยวกับวิธีการคุมกำเนิด';
   static const Map<String, dynamic> KNOWLEDGE_INFO = {
     'knowledge': {
@@ -128,7 +124,6 @@ class SurveyConstants {
     },
   };
 
-  // ส่วนที่ 5: ความสะดวกสบายและความสม่ำเสมอในการใช้
   static const String SECTION_5_TITLE =
       '5. ความสะดวกสบายและความสม่ำเสมอในการใช้';
   static const Map<String, dynamic> CONVENIENCE_INFO = {
@@ -145,7 +140,6 @@ class SurveyConstants {
     },
   };
 
-  // ส่วนที่ 6: ความต้องการในอนาคตและความเสี่ยง
   static const String SECTION_6_TITLE = '6. ความต้องการในอนาคตและความเสี่ยง';
   static const Map<String, dynamic> RISK_INFO = {
     'risky_activities': {
@@ -168,12 +162,11 @@ class SurveyConstants {
     },
   };
 
-  // ส่วนที่ 7: ความคิดเห็นส่วนตัว
   static const String SECTION_7_TITLE = '7. ความคิดเห็นส่วนตัว';
   static const Map<String, dynamic> PERSONAL_OPINION = {
     'important_factors': {
       'label':
-          'คุณให้ความสำคัญกับปัจจัยใดในการเลือกวิธีคุมกำเนิด (เลือก 3 ข้อที่สำคัญที่สุดสำหรับคุณ):',
+          'คุณให้ความสำคัญกับปัจจัยใดในการเลือกวิธีคุมกำเนิด \n(เลือก 3 ข้อที่สำคัญที่สุดสำหรับคุณ):',
       'type': 'checkbox_limited',
       'max_selection': 3,
       'options': [
@@ -226,7 +219,6 @@ class SurveyConstants {
     },
   };
 
-  // ข้อความแจ้งเตือนต่างๆ
   static const String MAX_SELECTION_WARNING =
       'เลือกได้สูงสุด {max} ข้อเท่านั้น';
   static const String SELECTED_COUNT = 'เลือกแล้ว {count}/{max} ข้อ';

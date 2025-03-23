@@ -1,4 +1,5 @@
 import 'package:fam_care/app_routes.dart';
+import 'package:fam_care/constatnt/app_colors.dart';
 import 'package:fam_care/view/disease/widget/disease_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -32,7 +33,7 @@ class _SelectDiseasePageState extends State<SelectDiseasePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("เพิ่มโรคประจำตัว"),
-        backgroundColor: primaryPurple,
+        backgroundColor: AppColors.color5,
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -80,7 +81,9 @@ class _SelectDiseasePageState extends State<SelectDiseasePage> {
                     ? Center(
                         child: Container(
                           padding: EdgeInsets.symmetric(
-                              vertical: 40, horizontal: 20),
+                            vertical: 40,
+                            horizontal: 20,
+                          ),
                           margin: EdgeInsets.symmetric(vertical: 20),
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -175,7 +178,7 @@ class _SelectDiseasePageState extends State<SelectDiseasePage> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryPurple,
+                      backgroundColor: AppColors.color5,
                       foregroundColor: Colors.white,
                       padding:
                           EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -208,7 +211,6 @@ class _SelectDiseasePageState extends State<SelectDiseasePage> {
                   ),
                 ),
               ),
-              // แสดงข้อความแจ้งเตือนเมื่อมีโรคครบ 4 โรค
               Obx(() => diseaseController.selectedDiseases.length >= 4
                   ? Container(
                       margin: EdgeInsets.only(top: 16),

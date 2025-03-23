@@ -11,7 +11,7 @@ import 'package:fam_care/view/register_page/register_page.dart';
 import 'package:fam_care/view/register_page/reset_password_page.dart';
 import 'package:go_router/go_router.dart';
 
-import 'view/survey/test_servey.dart';
+import 'view/survey/contraception_form_page.dart';
 
 class AppRoutes {
   static const String landingPage = '/';
@@ -57,14 +57,12 @@ class AppRoutes {
         path: resetPasswordPage,
         builder: (context, state) => ResetPasswordPage(),
       ),
+
       GoRoute(
-        path: calendarPage,
-        builder: (context, state) => CalendarPage(),
-      ),
-      GoRoute(
-        path: calendarPage,
-        builder: (context, state) => CalendarPage(),
-      ),
+          path: calendarPage,
+          builder: (context, state) {
+            return CalendarPage();
+          }),
       GoRoute(
         path: selectDiseasePage,
         builder: (context, state) => SelectDiseasePage(),

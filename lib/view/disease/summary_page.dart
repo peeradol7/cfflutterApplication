@@ -1,3 +1,5 @@
+import 'package:fam_care/constatnt/title_constants.dart';
+import 'package:fam_care/controller/disease_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
@@ -6,6 +8,7 @@ import '../../controller/summary_controller.dart';
 
 class SummaryPage extends StatelessWidget {
   final SummaryController controller = Get.put(SummaryController());
+  final DiseaseController diseaseController = Get.put(DiseaseController());
 
   SummaryPage({super.key});
 
@@ -28,7 +31,7 @@ class SummaryPage extends StatelessWidget {
                     child: SingleChildScrollView(
                       scrollDirection: Axis.vertical,
                       child: SizedBox(
-                        height: controller.savedRecommendations.isEmpty
+                        height: diseaseController.savedRecommendations.isEmpty
                             ? 200
                             : null,
                         child: DataTable(
@@ -42,40 +45,37 @@ class SummaryPage extends StatelessWidget {
                           ],
                           rows: [
                             DataRow(cells: [
-                              DataCell(Text("1. ยาคุมกำเนิดชนิดฮอร์โมนรวม",
+                              DataCell(Text(ContentConstants.firstTitle,
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold))),
                               ...buildMethodValues("first"),
                             ]),
                             DataRow(cells: [
-                              DataCell(Text(
-                                  "2. ยาเม็ดคุมกำเนิดชนิดฮอร์โมนเดี่ยว\n(มีโปรเจสโตเจนอย่างเดียว)",
+                              DataCell(Text(ContentConstants.secondtTitle,
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold))),
                               ...buildMethodValues("second"),
                             ]),
                             DataRow(cells: [
-                              DataCell(Text(
-                                  "3. ยาฉีดคุมกำเนิดชนิดฮอร์โมนเดี่ยว",
+                              DataCell(Text(ContentConstants.thirdTitle,
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold))),
                               ...buildMethodValues("third"),
                             ]),
                             DataRow(cells: [
-                              DataCell(Text("4. ยาฝังคุมกำเนิดชนิด 3 ปี/5 ปี",
+                              DataCell(Text(ContentConstants.fourthTitle,
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold))),
                               ...buildMethodValues("four"),
                             ]),
                             DataRow(cells: [
-                              DataCell(Text("5. ห่วงอนามัยชนิดมีฮอร์โมน",
+                              DataCell(Text(ContentConstants.fivethitle,
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold))),
                               ...buildMethodValues("five"),
                             ]),
                             DataRow(cells: [
-                              DataCell(Text(
-                                  "6. ห่วงอนามัยชนิดทองแดง \n(ไม่มีฮอร์โมน)",
+                              DataCell(Text(ContentConstants.sixthitle,
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold))),
                               ...buildMethodValues("six"),
@@ -96,27 +96,24 @@ class SummaryPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "คำอธิบายตาราง:",
+                        ContentConstants.description,
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                       SizedBox(height: 8),
-                      Text("หมวด 1 = ใช้วิธีนี้ได้ทุกกรณี",
+                      Text(ContentConstants.firstDescription,
                           style: TextStyle(fontSize: 14)),
-                      Text(
-                          "หมวด 2 = ใช้วิธีนี้ได้โดยทั่วไป (หากใช้ได้ทั้งวิธีในหมวด 1 และ 2 ให้เลือกใช้หมวด 1 ก่อน)",
+                      Text(ContentConstants.secondDescription,
                           style: TextStyle(fontSize: 14)),
-                      Text(
-                          "หมวด 3 = ไม่ควรใช้วิธีนี้ ยกเว้นไม่สามารถจัดหาวิธีที่เหมาะสมกว่านี้ ใช้ได้ภายใต้ข้อพิจารณาของบุคลากรทางการแพทย์",
+                      Text(ContentConstants.thirdDescription,
                           style: TextStyle(fontSize: 14)),
-                      Text("หมวด 4 = ห้ามใช้วิธีนี้",
+                      Text(ContentConstants.fourthDescription,
                           style: TextStyle(
                               fontSize: 14,
                               color: Colors.red,
                               fontWeight: FontWeight.bold)),
                       SizedBox(height: 8),
-                      Text(
-                          "หมายเหตุ: ทุกวิธีแนะนำให้ใช้ร่วมกับถุงยางอนามัยสำหรับผู้ชายหรือผู้หญิง เพื่อป้องกันโรคติดต่อทางเพศสัมพันธ์/ เชื้อเอชไอวี",
+                      Text(ContentConstants.fivethDescription,
                           style: TextStyle(
                               fontSize: 14, fontStyle: FontStyle.italic)),
                       SizedBox(height: 16),
@@ -124,7 +121,7 @@ class SummaryPage extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Text(
-                              '• วิธีคุมกำเนิดที่ปลอดภัยสำหรับคุณ (เรียงตามหมวด 1-4) คือ ',
+                              ContentConstants.sixthescription,
                               style: TextStyle(fontSize: 13),
                             ),
                           ),
