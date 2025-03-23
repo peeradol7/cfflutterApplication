@@ -1,27 +1,15 @@
-import 'package:fam_care/constatnt/contraception_survey_constants.dart';
+import 'dart:io';
+
 import 'package:fam_care/controller/user_controller.dart';
-import 'package:fam_care/view/survey/widget/first_section_widget.dart';
-import 'package:fam_care/view/survey/widget/pdf_widget.dart';
-import 'package:fam_care/view/survey/widget/section_widget.dart';
+import 'package:fam_care/service/shared_prefercense_service.dart';
+import 'package:fam_care/view/survey/const.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-// void main() {
-//   runApp(MyApp());
-// }
-
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'PDF Form Generator',
-//       theme: ThemeData(
-//         primarySwatch: Colors.blue,
-//       ),
-//       home: ContraceptionFormPage(),
-//     );
-//   }
-// }
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 class ContraceptionFormPage extends StatefulWidget {
   @override
@@ -31,7 +19,21 @@ class ContraceptionFormPage extends StatefulWidget {
 
 class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
   final UserController controller = Get.put(UserController());
+  int? loadedAge;
   Map<String, dynamic> generalAnswers = {};
+  Map<String, dynamic> healthAnswers = {};
+  Map<String, dynamic> planningAnswers = {};
+  Map<String, dynamic> knowledgeAnswers = {};
+  Map<String, dynamic> convenienceAnswers = {};
+  Map<String, dynamic> riskAnswers = {};
+  Map<String, dynamic> opinionAnswers = {};
+  Future<void>? _initialLoadFuture;
+  Map<String, dynamic> consultationAnswers = {};
+  Map<String, List<String>> multipleSelectionAnswers = {
+    'reason_for_contraception': [],
+    'previous_methods': [],
+    'important_factors': [],
+  };
 
   Map<String, TextEditingController> textControllers = {};
 
@@ -43,6 +45,7 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
     initTextControllers(ContraceptionSurveyConstants.PLANNING_INFO);
     initTextControllers(ContraceptionSurveyConstants.KNOWLEDGE_INFO);
     initTextControllers(ContraceptionSurveyConstants.PERSONAL_OPINION);
+    _initialLoadFuture = loadInitialData();
   }
 
   void initTextControllers(Map<String, dynamic> sectionData) {
@@ -51,6 +54,12 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
         textControllers[key] = TextEditingController();
       }
     });
+  }
+
+  Future<void> loadInitialData() async {
+    if (loadedAge == null) {
+      loadedAge = await loadAge();
+    }
   }
 
   @override
@@ -63,80 +72,240 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(ContraceptionSurveyConstants.FORM_TITLE),
+    return FutureBuilder<void>(
+      future: _initialLoadFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(
+            appBar: AppBar(title: Text('Loading...')),
+            body: Center(child: CircularProgressIndicator()),
+          );
+        } else if (snapshot.hasError) {
+          return Scaffold(
+            appBar: AppBar(title: Text('Error')),
+            body: Center(child: Text('Error: ${snapshot.error}')),
+          );
+        } else {
+          return Scaffold(
+              appBar: AppBar(
+                title: Text(ContraceptionSurveyConstants.FORM_TITLE),
+              ),
+              body: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildSectionTitle(
+                          ContraceptionSurveyConstants.SECTION_1_TITLE),
+                      buildSectionAge(ContraceptionSurveyConstants.GENERAL_INFO,
+                          generalAnswers),
+                      SizedBox(height: 20),
+                      _buildSectionTitle(
+                          ContraceptionSurveyConstants.SECTION_2_TITLE),
+                      _buildSection(ContraceptionSurveyConstants.HEALTH_INFO,
+                          healthAnswers),
+                      SizedBox(height: 20),
+                      _buildSectionTitle(
+                          ContraceptionSurveyConstants.SECTION_3_TITLE),
+                      _buildSection(ContraceptionSurveyConstants.PLANNING_INFO,
+                          planningAnswers),
+                      SizedBox(height: 20),
+                      _buildSectionTitle(
+                          ContraceptionSurveyConstants.SECTION_4_TITLE),
+                      _buildSection(ContraceptionSurveyConstants.KNOWLEDGE_INFO,
+                          knowledgeAnswers),
+                      SizedBox(height: 20),
+                      _buildSectionTitle(
+                          ContraceptionSurveyConstants.SECTION_5_TITLE),
+                      _buildSection(
+                          ContraceptionSurveyConstants.CONVENIENCE_INFO,
+                          convenienceAnswers),
+                      SizedBox(height: 20),
+                      _buildSectionTitle(
+                          ContraceptionSurveyConstants.SECTION_6_TITLE),
+                      _buildSection(
+                          ContraceptionSurveyConstants.RISK_INFO, riskAnswers),
+                      SizedBox(height: 20),
+                      _buildSectionTitle(
+                          ContraceptionSurveyConstants.SECTION_7_TITLE),
+                      _buildSection(
+                          ContraceptionSurveyConstants.PERSONAL_OPINION,
+                          opinionAnswers),
+                      SizedBox(height: 20),
+                      _buildSectionTitle(
+                          ContraceptionSurveyConstants.SECTION_8_TITLE),
+                      _buildSection(
+                          ContraceptionSurveyConstants.EXPERT_CONSULTATION,
+                          consultationAnswers),
+                      SizedBox(height: 30),
+                      Center(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            generateAndOpenPDF(context);
+                          },
+                          child: Text(ContraceptionSurveyConstants.PDF_BUTTON),
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 40, vertical: 15),
+                            textStyle: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 40),
+                    ],
+                  ),
+                ),
+              ));
+        }
+      },
+    );
+  }
+
+  pw.Widget _buildPdfSection(
+    String title,
+    Map<String, dynamic> sectionData,
+    Map<String, dynamic> answers,
+    pw.Font font,
+    pw.Font boldFont,
+  ) {
+    List<pw.Widget> fields = [];
+
+    fields.add(
+      pw.Text(
+        title,
+        style: pw.TextStyle(font: boldFont, fontSize: 16),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildSectionTitle(ContraceptionSurveyConstants.SECTION_1_TITLE),
-              FirstSectionWidget(
-                  sectionData: ContraceptionSurveyConstants.GENERAL_INFO,
-                  answers: generalAnswers),
-              SizedBox(height: 20),
-              _buildSectionTitle(ContraceptionSurveyConstants.SECTION_2_TITLE),
-              SectionWidget(
-                sectionData: ContraceptionSurveyConstants.HEALTH_INFO,
-                answers: generalAnswers,
-              ),
-              _buildSectionTitle(ContraceptionSurveyConstants.SECTION_3_TITLE),
-              // _buildSection(
-              //     ContraceptionSurveyConstants.PLANNING_INFO, planningAnswers),
-              SectionWidget(
-                sectionData: ContraceptionSurveyConstants.PLANNING_INFO,
-                answers: generalAnswers,
-              ),
-              SizedBox(height: 20),
-              _buildSectionTitle(ContraceptionSurveyConstants.SECTION_4_TITLE),
-              // _buildSection(ContraceptionSurveyConstants.KNOWLEDGE_INFO,
-              //     knowledgeAnswers),
-              SectionWidget(
-                sectionData: ContraceptionSurveyConstants.KNOWLEDGE_INFO,
-                answers: generalAnswers,
-              ),
-              SizedBox(height: 20),
-              _buildSectionTitle(ContraceptionSurveyConstants.SECTION_5_TITLE),
-              // _buildSection(ContraceptionSurveyConstants.CONVENIENCE_INFO,
-              //     convenienceAnswers),
-              SectionWidget(
-                sectionData: ContraceptionSurveyConstants.CONVENIENCE_INFO,
-                answers: generalAnswers,
-              ),
-              SizedBox(height: 20),
-              _buildSectionTitle(ContraceptionSurveyConstants.SECTION_6_TITLE),
-              // _buildSection(
-              //     ContraceptionSurveyConstants.RISK_INFO, riskAnswers),
-              SectionWidget(
-                sectionData: ContraceptionSurveyConstants.RISK_INFO,
-                answers: generalAnswers,
-              ),
-              SizedBox(height: 20),
-              _buildSectionTitle(ContraceptionSurveyConstants.SECTION_7_TITLE),
-              // _buildSection(ContraceptionSurveyConstants.PERSONAL_OPINION,
-              //     opinionAnswers),
-              SectionWidget(
-                sectionData: ContraceptionSurveyConstants.PERSONAL_OPINION,
-                answers: generalAnswers,
-              ),
-              SizedBox(height: 20),
-              _buildSectionTitle(ContraceptionSurveyConstants.SECTION_8_TITLE),
-              // _buildSection(ContraceptionSurveyConstants.EXPERT_CONSULTATION,
-              //     consultationAnswers),
-              SectionWidget(
-                sectionData: ContraceptionSurveyConstants.EXPERT_CONSULTATION,
-                answers: generalAnswers,
-              ),
-              SizedBox(height: 30),
-              PdfWidget(),
-              SizedBox(height: 40),
-            ],
+    );
+
+    fields.add(pw.SizedBox(height: 10));
+    String age = generalAnswers['age'] ?? '$loadedAge';
+    sectionData.forEach((key, data) {
+      bool shouldDisplay = true;
+      if (data.containsKey('dependent_on')) {
+        Map<String, String> dependencies = data['dependent_on'];
+        dependencies.forEach((depKey, depValue) {
+          if (depKey.startsWith('reason_for_contraception') ||
+              depKey.startsWith('previous_methods') ||
+              depKey.startsWith('important_factors')) {
+            if (!multipleSelectionAnswers.containsKey(depKey) ||
+                !multipleSelectionAnswers[depKey]!.contains(depValue)) {
+              shouldDisplay = false;
+            }
+          } else {
+            if (generalAnswers[depKey] != depValue &&
+                healthAnswers[depKey] != depValue &&
+                planningAnswers[depKey] != depValue &&
+                knowledgeAnswers[depKey] != depValue &&
+                convenienceAnswers[depKey] != depValue &&
+                riskAnswers[depKey] != depValue &&
+                opinionAnswers[depKey] != depValue &&
+                consultationAnswers[depKey] != depValue) {
+              shouldDisplay = false;
+            }
+          }
+        });
+      }
+
+      if (shouldDisplay) {
+        String labelText = data['label'];
+        if (key == 'age') {
+          labelText = 'อายุ : $age';
+        }
+        fields.add(
+          pw.Padding(
+            padding: const pw.EdgeInsets.only(left: 8.0, bottom: 5.0),
+            child: pw.Text(
+              labelText,
+              style: pw.TextStyle(font: font, fontSize: 12),
+            ),
           ),
-        ),
-      ),
+        );
+
+        if (data['type'] == 'text') {
+          String answer = '';
+          if (sectionData == ContraceptionSurveyConstants.GENERAL_INFO) {
+            answer = generalAnswers[key] ?? '';
+          } else if (sectionData == ContraceptionSurveyConstants.HEALTH_INFO) {
+            answer = healthAnswers[key] ?? '';
+          } else if (sectionData ==
+              ContraceptionSurveyConstants.PLANNING_INFO) {
+            answer = planningAnswers[key] ?? '';
+          } else if (sectionData ==
+              ContraceptionSurveyConstants.KNOWLEDGE_INFO) {
+            answer = knowledgeAnswers[key] ?? '';
+          } else if (sectionData ==
+              ContraceptionSurveyConstants.PERSONAL_OPINION) {
+            answer = opinionAnswers[key] ?? '';
+          }
+
+          fields.add(
+            pw.Padding(
+              padding: const pw.EdgeInsets.only(left: 16.0, bottom: 10.0),
+              child: pw.Text(
+                'คำตอบ: $answer',
+                style: pw.TextStyle(font: font, fontSize: 12),
+              ),
+            ),
+          );
+        } else if (data['type'] == 'radio') {
+          String answer = answers[key] ?? 'ไม่ได้ระบุ';
+          fields.add(
+            pw.Padding(
+              padding: const pw.EdgeInsets.only(left: 16.0, bottom: 10.0),
+              child: pw.Text(
+                'คำตอบ: $answer',
+                style: pw.TextStyle(font: font, fontSize: 12),
+              ),
+            ),
+          );
+        } else if (data['type'] == 'checkbox' ||
+            data['type'] == 'checkbox_limited') {
+          List<String> selectedOptions = multipleSelectionAnswers[key] ?? [];
+          if (selectedOptions.isNotEmpty) {
+            fields.add(
+              pw.Padding(
+                padding: const pw.EdgeInsets.only(left: 16.0, bottom: 10.0),
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Text(
+                      'คำตอบที่เลือก:',
+                      style: pw.TextStyle(font: font, fontSize: 12),
+                    ),
+                    pw.SizedBox(height: 5),
+                    ...selectedOptions.map((option) {
+                      return pw.Padding(
+                        padding:
+                            const pw.EdgeInsets.only(left: 8.0, bottom: 2.0),
+                        child: pw.Text(
+                          '• $option',
+                          style: pw.TextStyle(font: font, fontSize: 12),
+                        ),
+                      );
+                    }).toList(),
+                  ],
+                ),
+              ),
+            );
+          } else {
+            fields.add(
+              pw.Padding(
+                padding: const pw.EdgeInsets.only(left: 16.0, bottom: 10.0),
+                child: pw.Text(
+                  'คำตอบ: ไม่ได้เลือกข้อใด',
+                  style: pw.TextStyle(font: font, fontSize: 12),
+                ),
+              ),
+            );
+          }
+        }
+      }
+    });
+
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: fields,
     );
   }
 
@@ -150,5 +319,412 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       ),
     );
+  }
+
+  Future<int> loadAge() async {
+    final data = await SharedPrefercenseService().getUser();
+    if (data?.birthDay != null) {
+      final age = controller.calculateAge(data!.birthDay!);
+      return age;
+    } else {
+      return 0;
+    }
+  }
+
+  Widget buildSectionAge(
+      Map<String, dynamic> sectionData, Map<String, dynamic> answers) {
+    List<Widget> fields = [];
+
+    String age = generalAnswers['age'] ?? '$loadedAge';
+
+    sectionData.forEach((key, data) {
+      bool shouldDisplay = true;
+      if (data.containsKey('dependent_on')) {
+        Map<String, String> dependencies = data['dependent_on'];
+        dependencies.forEach((depKey, depValue) {
+          if (depKey.startsWith('reason_for_contraception') ||
+              depKey.startsWith('previous_methods') ||
+              depKey.startsWith('important_factors')) {
+            if (!multipleSelectionAnswers.containsKey(depKey) ||
+                !multipleSelectionAnswers[depKey]!.contains(depValue)) {
+              shouldDisplay = false;
+            }
+          } else {
+            if (generalAnswers[depKey] != depValue &&
+                healthAnswers[depKey] != depValue &&
+                planningAnswers[depKey] != depValue &&
+                knowledgeAnswers[depKey] != depValue &&
+                convenienceAnswers[depKey] != depValue &&
+                riskAnswers[depKey] != depValue &&
+                opinionAnswers[depKey] != depValue &&
+                consultationAnswers[depKey] != depValue) {
+              shouldDisplay = false;
+            }
+          }
+        });
+      }
+
+      if (shouldDisplay) {
+        String labelText = data['label'];
+        if (key == 'age') {
+          labelText = 'อายุ : $age';
+        }
+
+        fields.add(
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0, bottom: 16.0),
+            child: Text(
+              labelText,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
+        );
+
+        if (data['type'] == 'radio') {
+          for (String option in data['options']) {
+            fields.add(
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0, bottom: 8.0),
+                child: Row(
+                  children: [
+                    Radio<String>(
+                      value: option,
+                      groupValue: answers[key],
+                      onChanged: (value) {
+                        setState(() {
+                          answers[key] = value;
+                        });
+                      },
+                    ),
+                    Text(
+                      option,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+        }
+      }
+    });
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: fields,
+    );
+  }
+
+  Widget _buildSection(
+      Map<String, dynamic> sectionData, Map<String, dynamic> answers) {
+    List<Widget> fields = [];
+
+    sectionData.forEach((key, data) {
+      bool shouldDisplay = true;
+      if (data.containsKey('dependent_on')) {
+        Map<String, String> dependencies = data['dependent_on'];
+        dependencies.forEach((depKey, depValue) {
+          if (depKey.startsWith('reason_for_contraception') ||
+              depKey.startsWith('previous_methods') ||
+              depKey.startsWith('important_factors')) {
+            if (!multipleSelectionAnswers.containsKey(depKey) ||
+                !multipleSelectionAnswers[depKey]!.contains(depValue)) {
+              shouldDisplay = false;
+            }
+          } else {
+            if (generalAnswers[depKey] != depValue &&
+                healthAnswers[depKey] != depValue &&
+                planningAnswers[depKey] != depValue &&
+                knowledgeAnswers[depKey] != depValue &&
+                convenienceAnswers[depKey] != depValue &&
+                riskAnswers[depKey] != depValue &&
+                opinionAnswers[depKey] != depValue &&
+                consultationAnswers[depKey] != depValue) {
+              shouldDisplay = false;
+            }
+          }
+        });
+      }
+
+      if (shouldDisplay) {
+        // Dynamically update the label for the 'age' field
+        String labelText = data['label'];
+
+        fields.add(
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0, bottom: 16.0),
+            child: Text(
+              labelText,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
+        );
+
+        if (data['type'] == 'text') {
+          fields.add(
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, bottom: 16.0),
+              child: TextField(
+                controller: textControllers[key],
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    if (sectionData ==
+                        ContraceptionSurveyConstants.GENERAL_INFO) {
+                      generalAnswers[key] = value;
+                    } else if (sectionData ==
+                        ContraceptionSurveyConstants.HEALTH_INFO) {
+                      healthAnswers[key] = value;
+                    } else if (sectionData ==
+                        ContraceptionSurveyConstants.PLANNING_INFO) {
+                      planningAnswers[key] = value;
+                    } else if (sectionData ==
+                        ContraceptionSurveyConstants.KNOWLEDGE_INFO) {
+                      knowledgeAnswers[key] = value;
+                    } else if (sectionData ==
+                        ContraceptionSurveyConstants.PERSONAL_OPINION) {
+                      opinionAnswers[key] = value;
+                    }
+                  });
+                },
+              ),
+            ),
+          );
+        } else if (data['type'] == 'radio') {
+          for (String option in data['options']) {
+            fields.add(
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0, bottom: 8.0),
+                child: Row(
+                  children: [
+                    Radio<String>(
+                      value: option,
+                      groupValue: answers[key],
+                      onChanged: (value) {
+                        setState(() {
+                          answers[key] = value;
+                        });
+                      },
+                    ),
+                    Text(
+                      option,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+        } else if (data['type'] == 'checkbox' ||
+            data['type'] == 'checkbox_limited') {
+          int maxSelection =
+              data['type'] == 'checkbox_limited' ? data['max_selection'] : 999;
+
+          if (data['type'] == 'checkbox_limited') {
+            fields.add(
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0, bottom: 8.0),
+                child: Text(
+                  ContraceptionSurveyConstants.SELECTED_COUNT
+                      .replaceAll(
+                          '{count}',
+                          multipleSelectionAnswers[key]?.length.toString() ??
+                              '0')
+                      .replaceAll('{max}', maxSelection.toString()),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontStyle: FontStyle.italic),
+                ),
+              ),
+            );
+          }
+          for (String option in data['options']) {
+            fields.add(
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0, bottom: 8.0),
+                child: Row(
+                  children: [
+                    Checkbox(
+                      value: multipleSelectionAnswers[key]?.contains(option) ??
+                          false,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          if (!multipleSelectionAnswers.containsKey(key)) {
+                            multipleSelectionAnswers[key] = [];
+                          }
+
+                          if (value == true) {
+                            if (multipleSelectionAnswers[key]!.length <
+                                maxSelection) {
+                              multipleSelectionAnswers[key]!.add(option);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    ContraceptionSurveyConstants
+                                        .MAX_SELECTION_WARNING
+                                        .replaceAll(
+                                            '{max}', maxSelection.toString()),
+                                  ),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            }
+                          } else {
+                            multipleSelectionAnswers[key]!.remove(option);
+                          }
+                        });
+                      },
+                    ),
+                    Expanded(
+                      child: Text(
+                        option,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+        }
+      }
+    });
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: fields,
+    );
+  }
+
+  Future<void> generateAndOpenPDF(BuildContext context) async {
+    final font = await PdfGoogleFonts.sarabunRegular();
+    final boldFont = await PdfGoogleFonts.sarabunBold();
+
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        build: (pw.Context context) {
+          return [
+            pw.Header(
+              level: 0,
+              child: pw.Text(
+                ContraceptionSurveyConstants.FORM_TITLE,
+                style: pw.TextStyle(font: boldFont, fontSize: 20),
+              ),
+            ),
+            pw.SizedBox(height: 20),
+
+            _buildPdfSection(
+              ContraceptionSurveyConstants.SECTION_1_TITLE,
+              ContraceptionSurveyConstants.GENERAL_INFO,
+              generalAnswers,
+              font,
+              boldFont,
+            ),
+            pw.SizedBox(height: 20),
+
+            // ส่วนที่ 2: สุขภาพทั่วไป
+            _buildPdfSection(
+              ContraceptionSurveyConstants.SECTION_2_TITLE,
+              ContraceptionSurveyConstants.HEALTH_INFO,
+              healthAnswers,
+              font,
+              boldFont,
+            ),
+            pw.SizedBox(height: 20),
+
+            // ส่วนที่ 3: การวางแผนคุมกำเนิด
+            _buildPdfSection(
+              ContraceptionSurveyConstants.SECTION_3_TITLE,
+              ContraceptionSurveyConstants.PLANNING_INFO,
+              planningAnswers,
+              font,
+              boldFont,
+            ),
+            pw.SizedBox(height: 20),
+            pw.SizedBox(height: 20),
+
+            // ส่วนที่ 4: ความรู้เกี่ยวกับวิธีการคุมกำเนิด
+            _buildPdfSection(
+              ContraceptionSurveyConstants.SECTION_4_TITLE,
+              ContraceptionSurveyConstants.KNOWLEDGE_INFO,
+              knowledgeAnswers,
+              font,
+              boldFont,
+            ),
+            pw.SizedBox(height: 20),
+
+            // ส่วนที่ 5: ความสะดวกสบายและความสม่ำเสมอในการใช้
+            _buildPdfSection(
+              ContraceptionSurveyConstants.SECTION_5_TITLE,
+              ContraceptionSurveyConstants.CONVENIENCE_INFO,
+              convenienceAnswers,
+              font,
+              boldFont,
+            ),
+            pw.SizedBox(height: 20),
+
+            // ส่วนที่ 6: ความต้องการในอนาคตและความเสี่ยง
+            _buildPdfSection(
+              ContraceptionSurveyConstants.SECTION_6_TITLE,
+              ContraceptionSurveyConstants.RISK_INFO,
+              riskAnswers,
+              font,
+              boldFont,
+            ),
+            pw.SizedBox(height: 20),
+
+            // ส่วนที่ 7: ความคิดเห็นส่วนตัว
+            _buildPdfSection(
+              ContraceptionSurveyConstants.SECTION_7_TITLE,
+              ContraceptionSurveyConstants.PERSONAL_OPINION,
+              opinionAnswers,
+              font,
+              boldFont,
+            ),
+            pw.SizedBox(height: 20),
+            pw.SizedBox(height: 20),
+            pw.SizedBox(height: 20),
+
+            // ส่วนที่ 8: การปรึกษาผู้เชี่ยวชาญ
+            _buildPdfSection(
+              ContraceptionSurveyConstants.SECTION_8_TITLE,
+              ContraceptionSurveyConstants.EXPERT_CONSULTATION,
+              consultationAnswers,
+              font,
+              boldFont,
+            ),
+          ];
+        },
+      ),
+    );
+
+    final output = await getTemporaryDirectory();
+    final file =
+        File('${output.path}/${ContraceptionSurveyConstants.PDF_FILENAME}');
+    await file.writeAsBytes(await pdf.save());
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(ContraceptionSurveyConstants.PDF_SUCCESS),
+        duration: Duration(seconds: 2),
+      ),
+    );
+
+    await OpenFile.open(file.path);
   }
 }
