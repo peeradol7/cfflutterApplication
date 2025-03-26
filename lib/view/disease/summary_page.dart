@@ -1,9 +1,9 @@
-import 'package:fam_care/constatnt/title_constants.dart';
 import 'package:fam_care/controller/disease_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../constatnt/title_constants.dart';
 import '../../controller/summary_controller.dart';
 
 class SummaryPage extends StatelessWidget {
@@ -18,9 +18,9 @@ class SummaryPage extends StatelessWidget {
       appBar: AppBar(
         title: Text("ตารางการเลือกวิธีการคุมกำเนิด\nตามเงื่อนไขส่วนตัว"),
       ),
-      body: Obx(() => Column(
-            children: [
-              Expanded(
+      body: Obx(() => CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
                 child: InteractiveViewer(
                   boundaryMargin: EdgeInsets.all(40),
                   minScale: 0.1,
@@ -74,12 +74,14 @@ class SummaryPage extends StatelessWidget {
                                       TextStyle(fontWeight: FontWeight.bold))),
                               ...buildMethodValues("five"),
                             ]),
-                            DataRow(cells: [
-                              DataCell(Text(ContentConstants.sixthitle,
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold))),
-                              ...buildMethodValues("six"),
-                            ]),
+                            DataRow(
+                              cells: [
+                                DataCell(Text(ContentConstants.sixthitle,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold))),
+                                ...buildMethodValues("six"),
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -87,76 +89,77 @@ class SummaryPage extends StatelessWidget {
                   ),
                 ),
               ),
-              Container(
-                height: 360,
-                padding: EdgeInsets.all(16),
-                color: Colors.grey[200],
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        ContentConstants.description,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                      SizedBox(height: 8),
-                      Text(ContentConstants.firstDescription,
-                          style: TextStyle(fontSize: 14)),
-                      Text(ContentConstants.secondDescription,
-                          style: TextStyle(fontSize: 14)),
-                      Text(ContentConstants.thirdDescription,
-                          style: TextStyle(fontSize: 14)),
-                      Text(ContentConstants.fourthDescription,
+              SliverToBoxAdapter(
+                child: Container(
+                  padding: EdgeInsets.all(16),
+                  color: Colors.grey[200],
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          ContentConstants.description,
                           style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold)),
-                      SizedBox(height: 8),
-                      Text(ContentConstants.fivethDescription,
-                          style: TextStyle(
-                              fontSize: 14, fontStyle: FontStyle.italic)),
-                      SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              ContentConstants.sixthescription,
-                              style: TextStyle(fontSize: 13),
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          buildSafeMethodDropdown(),
-                        ],
-                      ),
-                      SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              '• คุณสนใจวิธีคุมกำเนิดวิธีใด จากการแนะนำของเรา: ',
-                              style: TextStyle(fontSize: 14),
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          buildPreferredMethodDropdown(),
-                        ],
-                      ),
-                      SizedBox(height: 20),
-                      Center(
-                        child: ElevatedButton.icon(
-                          icon: Icon(Icons.save),
-                          label: Text("บันทึกข้อมูล"),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            foregroundColor: Colors.white,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 12),
-                          ),
-                          onPressed: () => saveData(context),
+                              fontWeight: FontWeight.bold, fontSize: 16),
                         ),
-                      ),
-                    ],
+                        SizedBox(height: 8),
+                        Text(ContentConstants.firstDescription,
+                            style: TextStyle(fontSize: 14)),
+                        Text(ContentConstants.secondDescription,
+                            style: TextStyle(fontSize: 14)),
+                        Text(ContentConstants.thirdDescription,
+                            style: TextStyle(fontSize: 14)),
+                        Text(ContentConstants.fourthDescription,
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold)),
+                        SizedBox(height: 8),
+                        Text(ContentConstants.fivethDescription,
+                            style: TextStyle(
+                                fontSize: 14, fontStyle: FontStyle.italic)),
+                        SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                ContentConstants.sixthescription,
+                                style: TextStyle(fontSize: 13),
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            buildSafeMethodDropdown(),
+                          ],
+                        ),
+                        SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '• คุณสนใจวิธีคุมกำเนิดวิธีใด จากการแนะนำของเรา: ',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            buildPreferredMethodDropdown(),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        Center(
+                          child: ElevatedButton.icon(
+                            icon: Icon(Icons.save),
+                            label: Text("บันทึกข้อมูล"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 12),
+                            ),
+                            onPressed: () => saveData(context),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

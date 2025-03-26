@@ -1,9 +1,8 @@
 import 'package:fam_care/constatnt/app_colors.dart';
 import 'package:fam_care/controller/calendar_controller.dart';
+import 'package:fam_care/service/shared_prefercense_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarPage extends StatefulWidget {
@@ -16,317 +15,213 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
-  late Future<void> _loadDataFuture;
-  late DateTime _selectedDay;
-  late DateTime _focusedDay;
-  late List<String> _menstrualDates;
-  final CalendarController controller = Get.put(CalendarController());
-  @override
-  void initState() {
-    super.initState();
-    initializeDateFormatting('th', null).then((_) {
-      _loadDataFuture = controller.loadMenstrualDate();
-      _selectedDay = controller.selectedDay.value;
-      _focusedDay = controller.focusedDay.value;
-      _menstrualDates = controller.menstrualDates.toList();
-
-      controller.selectedDay.listen((value) {
-        if (mounted) setState(() => _selectedDay = value);
-      });
-
-      controller.focusedDay.listen((value) {
-        if (mounted) setState(() => _focusedDay = value);
-      });
-
-      controller.menstrualDates.listen((value) {
-        if (mounted) setState(() => _menstrualDates = value);
-      });
-    });
-  }
-
-  DateTime _calculateNextPeriod() {
-    if (_menstrualDates.isEmpty) {
-      return DateTime.now().add(Duration(days: 28));
-    }
-
-    List<DateTime> sortedDates = _menstrualDates
-        .map((dateStr) => DateTime.parse(dateStr))
-        .toList()
-      ..sort((a, b) => a.compareTo(b));
-
-    DateTime lastPeriod = sortedDates.last;
-
-    return lastPeriod;
-  }
+  final CalendarController _controller = Get.put(CalendarController());
+  final prefs = SharedPrefercenseService();
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _controller.loadMenstrualDate();
+    });
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('ปฏิทิน'),
+        title: Obx(() => Text(
+              _controller.isEditMode.value ? 'แก้ไขวันประจำเดือน' : 'ปฏิทิน',
+            )),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
+        actions: [
+          Obx(() => IconButton(
+                icon: Icon(
+                    _controller.isEditMode.value ? Icons.check : Icons.edit),
+                onPressed: () {
+                  _controller.toggleEditMode();
+                },
+              )),
+          Obx(() {
+            if (_controller.isEditMode.value) {
+              return IconButton(
+                icon: Icon(Icons.clear_all),
+                onPressed: () => _controller.clearMenstrualDates(),
+              );
+            }
+            return SizedBox.shrink();
+          }),
+        ],
       ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [AppColors.primary.withOpacity(0.3), Colors.white],
+            colors: [AppColors.primary, Colors.white],
           ),
         ),
-        child: FutureBuilder<void>(
-          future: _loadDataFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                ),
-              );
-            }
+        child: Obx(() {
+          List<DateTime> nextPeriods =
+              _controller.calculateNextPeriods(_controller.menstrualDates);
 
-            DateTime nextPeriod = controller.nextMenstrualDate.value != null
-                ? DateTime.parse(controller.nextMenstrualDate.value!)
-                : _calculateNextPeriod();
-
-            return Column(
-              children: [
-                // Next period info card
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
+          return Column(
+            children: [
+              // Calendar
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Card(
                     elevation: 4,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.calendar_today, color: AppColors.primary),
-                          SizedBox(width: 8),
-                          Flexible(
-                            child: Text(
-                              'รอบเดือนต่อไปคาดว่าจะมาวันที่ ${DateFormat('d MMM yyyy', 'th').format(nextPeriod)}',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.color5,
-                              ),
+                      padding: const EdgeInsets.all(8.0),
+                      child: TableCalendar(
+                        firstDay: DateTime.utc(2020, 10, 16),
+                        lastDay: DateTime.utc(2030, 3, 14),
+                        focusedDay: _controller.focusedDay.value,
+                        selectedDayPredicate: (day) =>
+                            isSameDay(_controller.selectedDay.value, day),
+                        onDaySelected: (selectedDay, focusedDay) {
+                          _controller.selectedDay.value = selectedDay;
+                          _controller.focusedDay.value = focusedDay;
+
+                          if (_controller.isEditMode.value) {
+                            _controller.toggleMenstrualDate(selectedDay);
+                          }
+                        },
+                        calendarFormat: CalendarFormat.month,
+                        headerStyle: HeaderStyle(
+                          formatButtonVisible: false,
+                          titleCentered: true,
+                          titleTextStyle: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                          leftChevronIcon: Icon(Icons.chevron_left,
+                              color: AppColors.primary),
+                          rightChevronIcon: Icon(Icons.chevron_right,
+                              color: AppColors.primary),
+                        ),
+                        calendarStyle: CalendarStyle(
+                          outsideDaysVisible: false,
+                          todayDecoration: BoxDecoration(
+                            color: _controller.isEditMode.value
+                                ? AppColors.secondary
+                                : AppColors.color5,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: AppColors.background,
+                              width: _controller.isEditMode.value ? 1 : 2,
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-
-                // Calendar
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Card(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TableCalendar(
-                          firstDay: DateTime.utc(2020, 10, 16),
-                          lastDay: DateTime.utc(2030, 3, 14),
-                          focusedDay: _focusedDay,
-                          selectedDayPredicate: (day) =>
-                              isSameDay(_selectedDay, day),
-                          onDaySelected: (selectedDay, focusedDay) {
-                            setState(() {
-                              controller.selectedDay.value = selectedDay;
-                              controller.focusedDay.value = focusedDay;
-                              _selectedDay = selectedDay;
-                              _focusedDay = focusedDay;
-                            });
-
-                            bool isPeriodDay = _menstrualDates.any((dateStr) =>
-                                isSameDay(
-                                    DateTime.parse(dateStr), selectedDay));
-
-                            if (isPeriodDay) {
-                              ScaffoldMessenger.of(context).showMaterialBanner(
-                                MaterialBanner(
-                                  content:
-                                      Text('คุณบันทึกว่าวันนี้มีประจำเดือน'),
-                                  backgroundColor:
-                                      AppColors.primary.withOpacity(0.9),
-                                  leading: Icon(Icons.water_drop,
-                                      color: Colors.white),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () =>
-                                          ScaffoldMessenger.of(context)
-                                              .hideCurrentMaterialBanner(),
-                                      child: Text('ปิด',
-                                          style:
-                                              TextStyle(color: Colors.white)),
-                                    ),
-                                  ],
-                                ),
-                              );
-
-                              // Auto-dismiss after 3 seconds
-                              Future.delayed(Duration(seconds: 3), () {
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context)
-                                      .hideCurrentMaterialBanner();
-                                }
-                              });
-                            }
-                          },
-                          calendarFormat: CalendarFormat.month,
-                          headerStyle: HeaderStyle(
-                            formatButtonVisible: false,
-                            titleCentered: true,
-                            titleTextStyle: TextStyle(
-                              color: AppColors.color5,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                            leftChevronIcon: Icon(Icons.chevron_left,
-                                color: AppColors.primary),
-                            rightChevronIcon: Icon(Icons.chevron_right,
-                                color: AppColors.primary),
+                          selectedDecoration: BoxDecoration(
+                            color: _controller.isEditMode.value
+                                ? AppColors.primary
+                                : AppColors.secondary,
+                            shape: BoxShape.circle,
                           ),
-                          daysOfWeekStyle: DaysOfWeekStyle(
-                            weekdayStyle: TextStyle(
-                                color: AppColors.color5,
-                                fontWeight: FontWeight.bold),
-                            weekendStyle: TextStyle(
-                                color: AppColors.color3,
-                                fontWeight: FontWeight.bold),
+                          holidayTextStyle: TextStyle(
+                            color: Colors.black, // Default text color
                           ),
-                          calendarStyle: CalendarStyle(
-                            outsideDaysVisible: false,
-                            todayDecoration: BoxDecoration(
-                              color: AppColors.color8,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                  color: AppColors.primary, width: 2),
-                            ),
-                            selectedDecoration: BoxDecoration(
-                              color: AppColors.secondary,
-                              shape: BoxShape.circle,
-                            ),
-                            weekendTextStyle:
-                                TextStyle(color: AppColors.color3),
-                            holidayTextStyle: TextStyle(color: Colors.white),
-                            holidayDecoration: BoxDecoration(
-                              color: AppColors.primary,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          holidayPredicate: (day) {
-                            for (String dateStr in _menstrualDates) {
-                              DateTime menstrualDate = DateTime.parse(dateStr);
-                              if (isSameDay(menstrualDate, day)) {
-                                return true;
-                              }
-                            }
-                            return false;
-                          },
-                          calendarBuilders: CalendarBuilders(
-                            todayBuilder: (context, date, _) {
-                              return Center(
-                                child: Container(
-                                  margin: const EdgeInsets.all(4.0),
-                                  width: 38,
-                                  height: 38,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                        color: AppColors.primary, width: 2),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      '${date.day}',
-                                      style: TextStyle(color: AppColors.color5),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                            holidayBuilder: (context, date, _) {
+                        ),
+                        holidayPredicate: (day) {
+                          bool isMenstrualDay = _controller.menstrualDates.any(
+                              (dateStr) =>
+                                  isSameDay(DateTime.parse(dateStr), day));
+                          bool isNextPeriodDay = nextPeriods
+                              .any((period) => isSameDay(period, day));
+
+                          if (isMenstrualDay) {
+                            return true;
+                          }
+                          if (isNextPeriodDay) {
+                            return true;
+                          }
+                          return false;
+                        },
+                        calendarBuilders: CalendarBuilders(
+                          markerBuilder: (context, day, events) {
+                            bool isMenstrualDay = _controller.menstrualDates
+                                .any((dateStr) =>
+                                    isSameDay(DateTime.parse(dateStr), day));
+                            bool isNextPeriodDay = nextPeriods
+                                .any((period) => isSameDay(period, day));
+
+                            if (isMenstrualDay) {
                               return Container(
-                                margin: const EdgeInsets.all(4.0),
-                                width: 38,
-                                height: 38,
+                                width:
+                                    MediaQuery.of(context).size.height * 0.055,
                                 decoration: BoxDecoration(
-                                  color: AppColors.primary.withOpacity(0.8),
+                                  color: Colors.pinkAccent,
                                   shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: AppColors.primary.withOpacity(0.3),
-                                      blurRadius: 4,
-                                      offset: Offset(0, 2),
-                                    ),
-                                  ],
                                 ),
                                 child: Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        '${date.day}',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Icon(
-                                        Icons.water_drop,
-                                        color: Colors.white,
-                                        size: 12,
-                                      ),
-                                    ],
+                                  child: Text(
+                                    day.day.toString(),
+                                    style: TextStyle(color: Colors.white),
                                   ),
                                 ),
                               );
-                            },
-                          ),
+                            }
+
+                            if (isNextPeriodDay) {
+                              return Container(
+                                width:
+                                    MediaQuery.of(context).size.height * 0.055,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.pinkAccent,
+                                    width: 2.5,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    day.day.toString(),
+                                    style: TextStyle(color: Colors.pinkAccent),
+                                  ),
+                                ),
+                              );
+                            }
+
+                            return null;
+                          },
                         ),
                       ),
                     ),
                   ),
                 ),
-
-                // Legend
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Card(
-                    elevation: 4,
-                    color: AppColors.colorButton,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildLegendItem(
-                              AppColors.primary, 'วันมีประจำเดือน'),
-                          _buildLegendItem(AppColors.color8, 'วันนี้',
-                              borderColor: AppColors.primary),
-                          _buildLegendItem(AppColors.secondary, 'วันที่เลือก'),
-                        ],
-                      ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Card(
+                  elevation: 4,
+                  color: AppColors.colorButton,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildLegendItem(Colors.pinkAccent, 'วันมีประจำเดือน'),
+                        _buildLegendItem(
+                          Colors.white,
+                          'วันที่คาดการณ์วันเป็นประจำเดือน',
+                          borderColor: Colors.pinkAccent,
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ],
-            );
-          },
-        ),
+              ),
+            ],
+          );
+        }),
       ),
     );
   }
@@ -341,14 +236,17 @@ class _CalendarPageState extends State<CalendarPage> {
             color: color,
             shape: BoxShape.circle,
             border: borderColor != null
-                ? Border.all(color: borderColor, width: 2)
+                ? Border.all(
+                    color: borderColor,
+                    width: 2,
+                  )
                 : null,
           ),
         ),
         SizedBox(width: 4),
         Text(
           label,
-          style: TextStyle(fontSize: 12, color: AppColors.color5),
+          style: TextStyle(fontSize: 12, color: Colors.black),
         ),
       ],
     );

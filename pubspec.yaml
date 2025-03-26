@@ -59,6 +59,8 @@ dependencies:
   pdf: ^3.11.3
   google_fonts: ^6.2.1
   intl: ^0.20.2
+  dashed_circle: ^0.0.2
+  flutter_dash: ^1.0.0
   
 
 dev_dependencies:

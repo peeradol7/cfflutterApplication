@@ -6,6 +6,7 @@ import 'package:fam_care/controller/user_controller.dart';
 import 'package:fam_care/service/shared_prefercense_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
@@ -934,7 +935,25 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
     final boldFont = await PdfGoogleFonts.sarabunBold();
 
     final pdf = pw.Document();
+    debugPrint('Form Title: ${SurveyConstants.FORM_TITLE}');
+    debugPrint('Section 1 Title: ${SurveyConstants.SECTION_1_TITLE}');
+    debugPrint('General Info: ${SurveyConstants.GENERAL_INFO}');
+    debugPrint('Health Info: ${SurveyConstants.HEALTH_INFO}');
+    debugPrint('Planning Info: ${SurveyConstants.PLANNING_INFO}');
+    debugPrint('Knowledge Info: ${SurveyConstants.KNOWLEDGE_INFO}');
+    debugPrint('Convenience Info: ${SurveyConstants.CONVENIENCE_INFO}');
+    debugPrint('Risk Info: ${SurveyConstants.RISK_INFO}');
+    debugPrint('Personal Opinion: ${SurveyConstants.PERSONAL_OPINION}');
+    debugPrint('Expert Consultation: ${SurveyConstants.EXPERT_CONSULTATION}');
 
+    debugPrint('General Answers: $generalAnswers');
+    debugPrint('Health Answers: $healthAnswers');
+    debugPrint('Planning Answers: $planningAnswers');
+    debugPrint('Knowledge Answers: $knowledgeAnswers');
+    debugPrint('Convenience Answers: $convenienceAnswers');
+    debugPrint('Risk Answers: $riskAnswers');
+    debugPrint('Opinion Answers: $opinionAnswers');
+    debugPrint('Consultation Answers: $consultationAnswers');
     pdf.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
@@ -948,7 +967,6 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
               ),
             ),
             pw.SizedBox(height: 20),
-
             _buildPdfSection(
               SurveyConstants.SECTION_1_TITLE,
               SurveyConstants.GENERAL_INFO,
@@ -957,7 +975,6 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
               boldFont,
             ),
             pw.SizedBox(height: 20),
-
             _buildPdfSection(
               SurveyConstants.SECTION_2_TITLE,
               SurveyConstants.HEALTH_INFO,
@@ -966,7 +983,6 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
               boldFont,
             ),
             pw.SizedBox(height: 20),
-
             _buildPdfSection(
               SurveyConstants.SECTION_3_TITLE,
               SurveyConstants.PLANNING_INFO,
@@ -976,8 +992,8 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
             ),
             pw.SizedBox(height: 20),
             pw.SizedBox(height: 20),
-
-            // ส่วนที่ 4: ความรู้เกี่ยวกับวิธีการคุมกำเนิด
+            pw.SizedBox(height: 20),
+            pw.SizedBox(height: 20),
             _buildPdfSection(
               SurveyConstants.SECTION_4_TITLE,
               SurveyConstants.KNOWLEDGE_INFO,
@@ -986,8 +1002,6 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
               boldFont,
             ),
             pw.SizedBox(height: 20),
-
-            // ส่วนที่ 5: ความสะดวกสบายและความสม่ำเสมอในการใช้
             _buildPdfSection(
               SurveyConstants.SECTION_5_TITLE,
               SurveyConstants.CONVENIENCE_INFO,
@@ -996,8 +1010,6 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
               boldFont,
             ),
             pw.SizedBox(height: 20),
-
-            // ส่วนที่ 6: ความต้องการในอนาคตและความเสี่ยง
             _buildPdfSection(
               SurveyConstants.SECTION_6_TITLE,
               SurveyConstants.RISK_INFO,
@@ -1005,9 +1017,7 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
               font,
               boldFont,
             ),
-            pw.SizedBox(height: 20),
-
-            // ส่วนที่ 7: ความคิดเห็นส่วนตัว
+            pw.SizedBox(height: 180),
             _buildPdfSection(
               SurveyConstants.SECTION_7_TITLE,
               SurveyConstants.PERSONAL_OPINION,
@@ -1018,7 +1028,6 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
             pw.SizedBox(height: 20),
             pw.SizedBox(height: 20),
             pw.SizedBox(height: 20),
-
             _buildPdfSection(
               SurveyConstants.SECTION_8_TITLE,
               SurveyConstants.EXPERT_CONSULTATION,
@@ -1030,9 +1039,14 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
         },
       ),
     );
+    final name = await SharedPrefercenseService().getUser();
+    final firstName = name!.firstName;
+    final lastName = name.lastName;
+    String currentDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
+    final directory = await getApplicationDocumentsDirectory();
+    final filePath = '${directory.path}/$firstName $lastName $currentDate.pdf';
 
-    final output = await getTemporaryDirectory();
-    final file = File('${output.path}/${SurveyConstants.PDF_FILENAME}');
+    final file = File(filePath);
     await file.writeAsBytes(await pdf.save());
 
     ScaffoldMessenger.of(context).showSnackBar(

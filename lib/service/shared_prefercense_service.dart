@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPrefercenseService {
   static const String userKey = "user_data";
+  static const String dateKey = 'menstrualdates';
 
   Future<void> instance() async {
     SharedPreferences.getInstance();
@@ -47,6 +48,21 @@ class SharedPrefercenseService {
   Future<void> removeUser() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(userKey);
+  }
+
+  Future<void> removeKey(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(key);
+  }
+
+  Future<List<String>> loadMenstrualDates() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getStringList(dateKey) ?? [];
+  }
+
+  Future<void> saveMenstrualDates(List<String> date) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(dateKey, date);
   }
 
   Future<String?> getUserId() async {

@@ -1,60 +1,99 @@
-import 'dart:convert';
-
 import 'package:fam_care/service/shared_prefercense_service.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../model/users_model.dart';
-
 class CalendarController extends GetxController {
-  var selectedDay = DateTime.now().obs;
-  var focusedDay = DateTime.now().obs;
+  final SharedPrefercenseService _prefsService = SharedPrefercenseService();
   var currentMenstrualDate = Rx<String?>(null);
   var nextMenstrualDate = Rx<String?>(null);
-  final RxList<String> menstrualDates = <String>[].obs;
-  @override
-  void onInit() {
-    super.onInit();
-    loadMenstrualDate();
-  }
+  Rx<DateTime> selectedDay = DateTime.now().obs;
+  Rx<DateTime> focusedDay = DateTime.now().obs;
+  RxList<String> menstrualDates = <String>[].obs;
+  RxBool isEditMode = false.obs;
 
   Future<void> loadMenstrualDate() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final userJson = prefs.getString(SharedPrefercenseService.userKey!);
+    menstrualDates.assignAll(await _prefsService.loadMenstrualDates());
+  }
 
-      if (userJson != null) {
-        UsersModel user = UsersModel.fromJson(jsonDecode(userJson));
+  void toggleEditMode() {
+    isEditMode.value = !isEditMode.value;
+  }
 
-        if (user.period != null) {
-          DateTime firstPeriodDate = user.period!;
-          DateTime currentDate = DateTime.now();
+  Future<void> toggleMenstrualDate(DateTime day) async {
+    if (!isEditMode.value) return;
 
-          List<String> allMenstrualDates = [];
+    String dateStr = day.toIso8601String().split('T').first;
 
-          DateTime tempDate = firstPeriodDate;
-          while (!tempDate.isAfter(currentDate)) {
-            allMenstrualDates.add(tempDate.toIso8601String());
-            tempDate = tempDate.add(Duration(days: 28));
-          }
+    menstrualDates.contains(dateStr)
+        ? menstrualDates.remove(dateStr)
+        : menstrualDates.add(dateStr);
 
-          allMenstrualDates.add(tempDate.toIso8601String());
+    menstrualDates.sort();
+    await _prefsService.saveMenstrualDates(menstrualDates);
+  }
 
-          if (allMenstrualDates.isNotEmpty) {
-            DateTime mostRecentDate =
-                DateTime.parse(allMenstrualDates[allMenstrualDates.length - 2]);
-            currentMenstrualDate.value = mostRecentDate.toIso8601String();
+  Future<void> clearMenstrualDates() async {
+    menstrualDates.clear();
+    await _prefsService.removeKey(SharedPrefercenseService.dateKey);
+  }
 
-            nextMenstrualDate.value = tempDate.toIso8601String();
+  List<DateTime> calculateNextPeriods(List<String> menstrualDates) {
+    if (menstrualDates.isEmpty) return [];
 
-            menstrualDates.value = allMenstrualDates;
-          }
-        }
-      }
-    } catch (e) {
-      print('Error loading menstrual dates: $e');
+    List<DateTime> sortedDates = menstrualDates
+        .map((dateStr) => DateTime.parse(dateStr))
+        .toList()
+      ..sort();
+
+    print('Debug: Sorted Dates = $sortedDates');
+
+    if (sortedDates.isEmpty) return [];
+
+    List<int> periodDays = sortedDates.map((date) => date.day).toList();
+    print('Debug: Period Days = $periodDays');
+
+    DateTime lastPeriod = sortedDates.last;
+    print('Debug: Last Period = $lastPeriod');
+
+    List<DateTime> nextPeriodDates = periodDays.map((originalDay) {
+      // Find the original date with this day
+      DateTime originalDate =
+          sortedDates.firstWhere((date) => date.day == originalDay);
+
+      // Calculate the next period date by adding 28 days to the original date
+      DateTime calculatedDate = originalDate.add(Duration(days: 28));
+
+      print(
+          'Debug: Original Day = $originalDay, Original Date = $originalDate, Calculated Date = $calculatedDate');
+
+      return calculatedDate;
+    }).toList();
+
+    print('menstrualDates *** $menstrualDates');
+    print('nextPeriodDates ** $nextPeriodDates');
+
+    return nextPeriodDates;
+  }
+
+  void updateMenstrualDates(List<String> dates) {
+    menstrualDates.value = dates;
+
+    if (dates.isNotEmpty) {
+      DateTime lastDate = DateTime.parse(dates[dates.length - 1]);
+      currentMenstrualDate.value = lastDate.toIso8601String();
+      nextMenstrualDate.value =
+          lastDate.add(Duration(days: 28)).toIso8601String();
     }
 
-    return;
+    _saveMenstrualDatesToPrefs(dates);
+  }
+
+  Future<void> _saveMenstrualDatesToPrefs(List<String> dates) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList(SharedPrefercenseService.dateKey, dates);
+    } catch (e) {
+      print('Error saving menstrual dates: $e');
+    }
   }
 }
