@@ -196,7 +196,8 @@ class _CalendarPageState extends State<CalendarPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.only(
+                    bottom: 35.0, top: 16, right: 16, left: 16),
                 child: Card(
                   elevation: 4,
                   color: AppColors.colorButton,
