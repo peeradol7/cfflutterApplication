@@ -31,7 +31,7 @@ class AppRoutes {
   static const String surveyPage = '/survey';
 
   static final GoRouter router = GoRouter(
-    initialLocation: landingPage,
+    initialLocation: homePage,
     routes: [
       GoRoute(
         path: landingPage,

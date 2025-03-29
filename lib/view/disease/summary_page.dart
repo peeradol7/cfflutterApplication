@@ -21,147 +21,155 @@ class SummaryPage extends StatelessWidget {
       body: Obx(() => CustomScrollView(
             slivers: [
               SliverToBoxAdapter(
-                child: InteractiveViewer(
-                  boundaryMargin: EdgeInsets.all(40),
-                  minScale: 0.1,
-                  maxScale: 5.0,
-                  constrained: false,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: SizedBox(
-                        height: diseaseController.savedRecommendations.isEmpty
-                            ? 200
-                            : null,
-                        child: DataTable(
-                          border: TableBorder.all(color: Colors.black),
-                          columns: [
-                            DataColumn(
-                                label: Text("วิธีการคุมกำเนิด",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold))),
-                            ...buildConditionColumns(),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal, // กำหนดให้เลื่อนซ้ายขวาได้
+                  child: Container(
+                    // ใช้ Container เพื่อกำหนดความสูงทั้งหมดของส่วนตาราง
+                    // ไม่กำหนดความกว้างเพื่อให้ตารางขยายตามเนื้อหา
+                    height: 400, // ปรับตามความเหมาะสม
+                    child: DataTable(
+                      border: TableBorder.all(color: Colors.black),
+                      columns: [
+                        DataColumn(
+                            label: Text("วิธีการคุมกำเนิด",
+                                style: TextStyle(fontWeight: FontWeight.bold))),
+                        ...buildConditionColumns(),
+                      ],
+                      rows: [
+                        DataRow(cells: [
+                          DataCell(Text(ContentConstants.firstTitle,
+                              style: TextStyle(fontWeight: FontWeight.bold))),
+                          ...buildMethodValues("first"),
+                        ]),
+                        DataRow(cells: [
+                          DataCell(Text(ContentConstants.secondtTitle,
+                              style: TextStyle(fontWeight: FontWeight.bold))),
+                          ...buildMethodValues("second"),
+                        ]),
+                        DataRow(cells: [
+                          DataCell(Text(ContentConstants.thirdTitle,
+                              style: TextStyle(fontWeight: FontWeight.bold))),
+                          ...buildMethodValues("third"),
+                        ]),
+                        DataRow(cells: [
+                          DataCell(Text(ContentConstants.fourthTitle,
+                              style: TextStyle(fontWeight: FontWeight.bold))),
+                          ...buildMethodValues("four"),
+                        ]),
+                        DataRow(cells: [
+                          DataCell(Text(ContentConstants.fivethitle,
+                              style: TextStyle(fontWeight: FontWeight.bold))),
+                          ...buildMethodValues("five"),
+                        ]),
+                        DataRow(
+                          cells: [
+                            DataCell(Text(ContentConstants.sixthitle,
+                                style: TextStyle(fontWeight: FontWeight.bold))),
+                            ...buildMethodValues("six"),
                           ],
-                          rows: [
-                            DataRow(cells: [
-                              DataCell(Text(ContentConstants.firstTitle,
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold))),
-                              ...buildMethodValues("first"),
-                            ]),
-                            DataRow(cells: [
-                              DataCell(Text(ContentConstants.secondtTitle,
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold))),
-                              ...buildMethodValues("second"),
-                            ]),
-                            DataRow(cells: [
-                              DataCell(Text(ContentConstants.thirdTitle,
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold))),
-                              ...buildMethodValues("third"),
-                            ]),
-                            DataRow(cells: [
-                              DataCell(Text(ContentConstants.fourthTitle,
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold))),
-                              ...buildMethodValues("four"),
-                            ]),
-                            DataRow(cells: [
-                              DataCell(Text(ContentConstants.fivethitle,
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold))),
-                              ...buildMethodValues("five"),
-                            ]),
-                            DataRow(
-                              cells: [
-                                DataCell(Text(ContentConstants.sixthitle,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold))),
-                                ...buildMethodValues("six"),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Container(
-                  padding: EdgeInsets.all(16),
-                  color: Colors.grey[200],
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          ContentConstants.description,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16),
-                        ),
-                        SizedBox(height: 8),
-                        Text(ContentConstants.firstDescription,
-                            style: TextStyle(fontSize: 14)),
-                        Text(ContentConstants.secondDescription,
-                            style: TextStyle(fontSize: 14)),
-                        Text(ContentConstants.thirdDescription,
-                            style: TextStyle(fontSize: 14)),
-                        Text(ContentConstants.fourthDescription,
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold)),
-                        SizedBox(height: 8),
-                        Text(ContentConstants.fivethDescription,
-                            style: TextStyle(
-                                fontSize: 14, fontStyle: FontStyle.italic)),
-                        SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                ContentConstants.sixthescription,
-                                style: TextStyle(fontSize: 13),
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            buildSafeMethodDropdown(),
-                          ],
-                        ),
-                        SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                '• คุณสนใจวิธีคุมกำเนิดวิธีใด จากการแนะนำของเรา: ',
-                                style: TextStyle(fontSize: 14),
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            buildPreferredMethodDropdown(),
-                          ],
-                        ),
-                        SizedBox(height: 20),
-                        Center(
-                          child: ElevatedButton.icon(
-                            icon: Icon(Icons.save),
-                            label: Text("บันทึกข้อมูล"),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              foregroundColor: Colors.white,
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 12),
-                            ),
-                            onPressed: () => saveData(context),
-                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: ElevatedButton.icon(
+                    icon: Obx(() => Icon(controller.isDescriptionVisible.value
+                        ? Icons.visibility_off
+                        : Icons.visibility)),
+                    label: Obx(() => Text(controller.isDescriptionVisible.value
+                        ? "ซ่อนคำอธิบาย"
+                        : "แสดงคำอธิบาย")),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    ),
+                    onPressed: () => controller.isDescriptionVisible.toggle(),
+                  ),
+                ),
+              ),
+              // แสดงส่วน Container เมื่อกดปุ่ม
+              SliverToBoxAdapter(
+                child: Obx(() => controller.isDescriptionVisible.value
+                    ? Container(
+                        padding: EdgeInsets.all(16),
+                        color: Colors.grey[200],
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                ContentConstants.description,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 16),
+                              ),
+                              SizedBox(height: 8),
+                              Text(ContentConstants.firstDescription,
+                                  style: TextStyle(fontSize: 14)),
+                              Text(ContentConstants.secondDescription,
+                                  style: TextStyle(fontSize: 14)),
+                              Text(ContentConstants.thirdDescription,
+                                  style: TextStyle(fontSize: 14)),
+                              Text(ContentConstants.fourthDescription,
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold)),
+                              SizedBox(height: 8),
+                              Text(ContentConstants.fivethDescription,
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontStyle: FontStyle.italic)),
+                              SizedBox(height: 16),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      ContentConstants.sixthescription,
+                                      style: TextStyle(fontSize: 13),
+                                    ),
+                                  ),
+                                  SizedBox(width: 10),
+                                  buildSafeMethodDropdown(),
+                                ],
+                              ),
+                              SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      '• คุณสนใจวิธีคุมกำเนิดวิธีใด จากการแนะนำของเรา: ',
+                                      style: TextStyle(fontSize: 14),
+                                    ),
+                                  ),
+                                  SizedBox(width: 10),
+                                  buildPreferredMethodDropdown(),
+                                ],
+                              ),
+                              SizedBox(height: 20),
+                              Center(
+                                child: ElevatedButton.icon(
+                                  icon: Icon(Icons.save),
+                                  label: Text("บันทึกข้อมูล"),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.green,
+                                    foregroundColor: Colors.white,
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 12),
+                                  ),
+                                  onPressed: () => saveData(context),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : SizedBox.shrink()),
               ),
             ],
           )),
@@ -246,6 +254,7 @@ class SummaryPage extends StatelessWidget {
           DataCell(
             Text(
               value,
+              maxLines: 3,
               style: isHighlighted
                   ? TextStyle(color: Colors.red, fontWeight: FontWeight.bold)
                   : null,

@@ -10,6 +10,7 @@ class SummaryController extends GetxController {
   final HistoryService _historyService = HistoryService();
   final prefs = SharedPrefercenseService();
   final DiseaseController diseaseController = Get.put(DiseaseController());
+  final isDescriptionVisible = false.obs;
 
   final RxList<SelectedRecommendation> savedRecommendations =
       <SelectedRecommendation>[].obs;
