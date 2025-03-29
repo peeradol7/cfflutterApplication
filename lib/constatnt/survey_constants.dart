@@ -8,10 +8,23 @@ class SurveyConstants {
   static const String PDF_FILENAME = 'survey.pdf';
   final controler = Get.put(UserController());
 
+  static const String role = '';
+  static const Map<String, dynamic> roleInfo = {
+    'role': {
+      'label': 'คุณเป็นบุคคลทั่วไปหรือผู้ป่วยของโรงพยาบาล ',
+      'type': 'radio',
+      'options': ['ผู้ป่วยของโรงพยาบาล', 'บุคคลทั่วไป'],
+    },
+  };
   static const String SECTION_1_TITLE = '1. ข้อมูลทั่วไป';
   static const Map<String, dynamic> GENERAL_INFO = {
     'age': {
       'label': 'อายุ: ปี',
+    },
+    'role': {
+      'label': 'คุณเป็นบุคคลทั่วไปหรือผู้ป่วยของโรงพยาบาล ',
+      'type': 'radio',
+      'options': ['ผู้ป่วยของโรงพยาบาล', 'บุคคลทั่วไป'],
     },
     'marital_status': {
       'label': 'สถานภาพการสมรส:',

@@ -1060,6 +1060,7 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
       ),
     );
     final data = ContraceptionFormModel(
+      role: generalAnswers['role'] ?? 'ไม่ได้ป้อนข้อมูล',
       createBy: '$firstName $lastName',
       age: '$age',
       maritalStatus: generalAnswers['marital_status'] ?? 'ไม่ได้ป้อนข้อมูล',

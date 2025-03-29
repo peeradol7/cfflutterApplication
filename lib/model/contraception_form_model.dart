@@ -1,4 +1,5 @@
 class ContraceptionFormModel {
+  final String role;
   final String createBy;
   final String age;
   final String maritalStatus;
@@ -19,6 +20,7 @@ class ContraceptionFormModel {
   final String wantConsultation;
 
   ContraceptionFormModel({
+    required this.role,
     required this.age,
     required this.createBy,
     required this.maritalStatus,
@@ -41,6 +43,7 @@ class ContraceptionFormModel {
 
   factory ContraceptionFormModel.fromMap(Map<String, dynamic> map) {
     return ContraceptionFormModel(
+      role: map['role'],
       createBy: map['createBy'],
       age: map['age'],
       maritalStatus: map['marital_status'],
@@ -64,6 +67,7 @@ class ContraceptionFormModel {
 
   Map<String, dynamic> toMap() {
     return {
+      'role': role,
       'age': age,
       'createBy': createBy,
       'marital_status': maritalStatus,
