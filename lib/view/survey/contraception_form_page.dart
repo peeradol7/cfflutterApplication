@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:fam_care/constatnt/app_colors.dart';
 import 'package:fam_care/constatnt/survey_constants.dart';
+import 'package:fam_care/controller/form_controller.dart';
 import 'package:fam_care/controller/user_controller.dart';
+import 'package:fam_care/model/contraception_form_model.dart';
 import 'package:fam_care/service/shared_prefercense_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,6 +23,7 @@ class ContraceptionFormPage extends StatefulWidget {
 
 class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
   final UserController controller = Get.put(UserController());
+  final formController = Get.put(FormController());
   int? loadedAge;
   Map<String, dynamic> generalAnswers = {};
   Map<String, dynamic> healthAnswers = {};
@@ -476,7 +479,7 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
                   color: Colors.white,
                   letterSpacing: 0.5,
                 ),
-                maxLines: 3,
+                maxLines: 4,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -623,7 +626,7 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
                 const EdgeInsets.only(left: 12.0, bottom: 16.0, right: 12.0),
             child: Text(
               labelText,
-              maxLines: 3,
+              maxLines: 4,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: 16,
@@ -728,7 +731,7 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
                             Expanded(
                               child: Text(
                                 option,
-                                maxLines: 3,
+                                maxLines: 4,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontSize: 15,
@@ -816,7 +819,7 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
                             multipleSelectionAnswers[key]?.length.toString() ??
                                 '0')
                         .replaceAll('{max}', maxSelection.toString()),
-                    maxLines: 3,
+                    maxLines: 4,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontStyle: FontStyle.italic,
@@ -904,7 +907,7 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
                             Expanded(
                               child: Text(
                                 option,
-                                maxLines: 3,
+                                maxLines: 4,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontSize: 15,
@@ -935,16 +938,16 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
     final boldFont = await PdfGoogleFonts.sarabunBold();
 
     final pdf = pw.Document();
-    debugPrint('Form Title: ${SurveyConstants.FORM_TITLE}');
-    debugPrint('Section 1 Title: ${SurveyConstants.SECTION_1_TITLE}');
-    debugPrint('General Info: ${SurveyConstants.GENERAL_INFO}');
-    debugPrint('Health Info: ${SurveyConstants.HEALTH_INFO}');
-    debugPrint('Planning Info: ${SurveyConstants.PLANNING_INFO}');
-    debugPrint('Knowledge Info: ${SurveyConstants.KNOWLEDGE_INFO}');
-    debugPrint('Convenience Info: ${SurveyConstants.CONVENIENCE_INFO}');
-    debugPrint('Risk Info: ${SurveyConstants.RISK_INFO}');
-    debugPrint('Personal Opinion: ${SurveyConstants.PERSONAL_OPINION}');
-    debugPrint('Expert Consultation: ${SurveyConstants.EXPERT_CONSULTATION}');
+    // debugPrint('Form Title: ${SurveyConstants.FORM_TITLE}');
+    // debugPrint('Section 1 Title: ${SurveyConstants.SECTION_1_TITLE}');
+    // debugPrint('General Info: ${SurveyConstants.GENERAL_INFO}');
+    // debugPrint('Health Info: ${SurveyConstants.HEALTH_INFO}');
+    // debugPrint('Planning Info: ${SurveyConstants.PLANNING_INFO}');
+    // debugPrint('Knowledge Info: ${SurveyConstants.KNOWLEDGE_INFO}');
+    // debugPrint('Convenience Info: ${SurveyConstants.CONVENIENCE_INFO}');
+    // debugPrint('Risk Info: ${SurveyConstants.RISK_INFO}');
+    // debugPrint('Personal Opinion: ${SurveyConstants.PERSONAL_OPINION}');
+    // debugPrint('Expert Consultation: ${SurveyConstants.EXPERT_CONSULTATION}');
 
     debugPrint('General Answers: $generalAnswers');
     debugPrint('Health Answers: $healthAnswers');
@@ -1039,9 +1042,10 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
         },
       ),
     );
-    final name = await SharedPrefercenseService().getUser();
-    final firstName = name!.firstName;
-    final lastName = name.lastName;
+    final userData = await SharedPrefercenseService().getUser();
+    final firstName = userData!.firstName;
+    final lastName = userData.lastName;
+    final age = controller.calculateAge(userData.birthDay!);
     String currentDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
     final directory = await getApplicationDocumentsDirectory();
     final filePath = '${directory.path}/$firstName $lastName $currentDate.pdf';
@@ -1055,6 +1059,34 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
         duration: Duration(seconds: 2),
       ),
     );
+    final data = ContraceptionFormModel(
+      createBy: '$firstName $lastName',
+      age: '$age',
+      maritalStatus: generalAnswers['marital_status'] ?? 'ไม่ได้ป้อนข้อมูล',
+      haveChildren: generalAnswers['have_children'] ?? 'ไม่ได้ป้อนข้อมูล',
+      planChildren: generalAnswers['plan_children'] ?? 'ไม่ได้ป้อนข้อมูล',
+      healthIssues: healthAnswers['health_issues'] ?? 'ไม่ได้ป้อนข้อมูล',
+      sideEffects: healthAnswers['side_effects'] ?? 'ไม่ได้ป้อนข้อมูล',
+      planContraception:
+          planningAnswers['plan_contraception'] ?? 'ไม่ได้ป้อนข้อมูล',
+      plannedDuration:
+          planningAnswers['planned_duration'] ?? 'ไม่ได้ป้อนข้อมูล',
+      knowledge: knowledgeAnswers['knowledge'] ?? 'ไม่ได้ป้อนข้อมูล',
+      regularUse: convenienceAnswers['regular_use'] ?? 'ไม่ได้ป้อนข้อมูล',
+      followUp: convenienceAnswers['follow_up'] ?? 'ไม่ได้ป้อนข้อมูล',
+      riskyActivities: riskAnswers['risky_activities'] ?? 'ไม่ได้ป้อนข้อมูล',
+      reversibleMethod: riskAnswers['reversible_method'] ?? 'ไม่ได้ป้อนข้อมูล',
+      hormoneSideEffects:
+          riskAnswers['hormone_side_effects'] ?? 'ไม่ได้ป้อนข้อมูล',
+      interestedMethod:
+          opinionAnswers['interested_method'] ?? 'ไม่ได้ป้อนข้อมูล',
+      consultedExpert:
+          consultationAnswers['consulted_expert'] ?? 'ไม่ได้ป้อนข้อมูล',
+      wantConsultation:
+          consultationAnswers['want_consultation'] ?? 'ไม่ได้ป้อนข้อมูล',
+    );
+
+    await formController.saveData(data);
 
     await OpenFile.open(file.path);
   }

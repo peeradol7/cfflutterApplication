@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fam_care/model/contraception_form_model.dart';
 
-class FormService {
+class ContraceptionFormService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static final String contraceptionForm = 'contraceptionForm';
 

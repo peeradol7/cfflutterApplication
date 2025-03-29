@@ -45,15 +45,10 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 20),
-              Container(
-                width: 300,
-                height: 300,
-                decoration: BoxDecoration(color: Colors.amber),
-                child: Center(
-                  child: Text('ใส่โลโก้แอป'),
-                ),
+              Image.asset(
+                'assets/logo-removeBG.png',
+                height: MediaQuery.of(context).size.height * 0.4,
               ),
-              const SizedBox(height: 16),
               const Text(
                 'กรุณาเข้าสู่ระบบเพื่อใช้งานแอปพลิเคชัน',
                 textAlign: TextAlign.center,
