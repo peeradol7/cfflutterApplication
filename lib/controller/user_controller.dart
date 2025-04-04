@@ -50,22 +50,31 @@ class UserController extends GetxController {
   }
 
   Future<void> fetchUserDataById(String userId) async {
+    print('Controller: Fetching user data for ID: $userId');
     if (userId.isEmpty) {
+      print('Controller: UserID is empty, aborting fetch');
       isLoading.value = false;
       return;
     }
 
-    userData.value = await _userService.fetchUserDataByUserId(userId);
-    SharedPrefercenseService.saveUser(userData.value!);
+    try {
+      userData.value = await _userService.fetchUserDataByUserId(userId);
 
-    if (userData.value != null) {
-      firstNameController.text = userData.value!.firstName ?? '';
-      lastNameController.text = userData.value!.lastName ?? '';
-      birthDate.value = userData.value?.birthDay;
-      periodDate.value = userData.value?.period;
-    } else {}
+      if (userData.value != null) {
+        print('Controller: User data fetched successfully');
+        SharedPrefercenseService.saveUser(userData.value!);
 
-    isLoading.value = false;
+        firstNameController.text = userData.value!.firstName ?? '';
+        lastNameController.text = userData.value!.lastName ?? '';
+        birthDate.value = userData.value?.birthDay;
+      } else {
+        print('Controller: No user data found in Firestore');
+      }
+    } catch (e) {
+      print('Controller: Error fetching user data: $e');
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   Future<bool> saveUserData(String userId, String authMethod) async {
@@ -91,7 +100,6 @@ class UserController extends GetxController {
           firstName: firstNameController.text,
           lastName: lastNameController.text,
           birthDay: birthDate.value,
-          period: periodDate.value,
           authMethod: authMethod,
         );
 

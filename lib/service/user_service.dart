@@ -30,22 +30,30 @@ class UserService {
   }
 
   Future<UsersModel?> fetchUserDataByUserId(String uid) async {
+    print('Attempting to fetch user data for UID: $uid');
     try {
       final userDoc = await FirebaseFirestore.instance
           .collection(usersCollections)
           .doc(uid)
           .get();
 
+      print('Document fetch result - exists: ${userDoc.exists}');
+
       if (!userDoc.exists || userDoc.data() == null) {
+        print('User document does not exist or is empty');
         return null;
       }
 
       final data = userDoc.data()!;
+      print('User document data retrieved: ${data.toString()}');
 
       try {
         final userModel = UsersModel.fromJson(data);
+        print('Successfully parsed user model');
         return userModel;
       } catch (e) {
+        print('Error parsing user model from data: $e');
+        print('Raw data that failed to parse: $data');
         return null;
       }
     } catch (e) {

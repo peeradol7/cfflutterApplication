@@ -1,11 +1,12 @@
 class ContentConstants {
-  static final String firstTitle = '1. ยาคุมกำเนิดชนิดฮอร์โมนรวม';
+  static final String firstTitle = 'ยาคุมกำเนิดชนิดฮอร์โมนรวม';
   static final String secondtTitle =
-      '2. ยาเม็ดคุมกำเนิดชนิดฮอร์โมนเดี่ยว\n(มีโปรเจสโตเจนอย่างเดียว)';
-  static final String thirdTitle = '3. ยาฉีดคุมกำเนิดชนิดฮอร์โมนเดี่ยว';
-  static final String fourthTitle = '4. ยาฝังคุมกำเนิดชนิด 3 ปี/5 ปี';
-  static final String fivethitle = '5. ห่วงอนามัยชนิดมีฮอร์โมน"';
-  static final String sixthitle = '6. ห่วงอนามัยชนิดทองแดง \n(ไม่มีฮอร์โมน)';
+      'ยาเม็ดคุมกำเนิดชนิดฮอร์โมนเดี่ยว\n(มีโปรเจสโตเจนอย่างเดียว)';
+  static final String thirdTitle = 'ยาฉีดคุมกำเนิดชนิดฮอร์โมนเดี่ยว';
+  static final String fourthTitle = 'ยาฝังคุมกำเนิดชนิด 3 ปี/5 ปี';
+  static final String fivethitle = 'ห่วงอนามัยชนิดมีฮอร์โมน"';
+  static final String sixthitle = 'ห่วงอนามัยชนิดทองแดง \n(ไม่มีฮอร์โมน)';
+
   static final String description = 'คำอธิบายตาราง:';
 
   static final String firstDescription = 'หมวด 1 = ใช้วิธีนี้ได้ทุกกรณี';
@@ -18,4 +19,39 @@ class ContentConstants {
       'หมายเหตุ: ทุกวิธีแนะนำให้ใช้ร่วมกับถุงยางอนามัยสำหรับผู้ชายหรือผู้หญิง เพื่อป้องกันโรคติดต่อทางเพศสัมพันธ์/ เชื้อเอชไอวี';
   static final String sixthescription =
       '• วิธีคุมกำเนิดที่ปลอดภัยสำหรับคุณ (เรียงตามหมวด 1-4) คือ ';
+  static String getTitle(String methodKey) {
+    switch (methodKey) {
+      case "first":
+        return firstTitle;
+      case "second":
+        return secondtTitle;
+      case "third":
+        return thirdTitle;
+      case "four":
+        return fourthTitle;
+      case "five":
+        return fivethitle;
+      case "six":
+        return sixthitle;
+      default:
+        return "ไม่พบข้อมูล"; // กรณีที่ key ไม่ตรงกับที่กำหนด
+    }
+  }
+
+  static final List<String> contraceptiveTitles = [
+    'ยาคุมกำเนิดชนิดฮอร์โมนรวม',
+    'ยาเม็ดคุมกำเนิดชนิดฮอร์โมนเดี่ยว\n(มีโปรเจสโตเจนอย่างเดียว)',
+    'ยาฉีดคุมกำเนิดชนิดฮอร์โมนเดี่ยว',
+    'ยาฝังคุมกำเนิดชนิด 3 ปี/5 ปี',
+    'ห่วงอนามัยชนิดมีฮอร์โมน',
+    'ห่วงอนามัยชนิดทองแดง \n(ไม่มีฮอร์โมน)',
+  ];
+  static final List<String> keys = [
+    'first',
+    'second',
+    'third',
+    'four',
+    'five',
+    'six',
+  ];
 }

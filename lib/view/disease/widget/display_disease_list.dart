@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../controller/disease_controller.dart';
+import '../../../controller/disease_controller.dart';
 
 class DisplayDiseaseList extends StatelessWidget {
   DisplayDiseaseList({super.key});

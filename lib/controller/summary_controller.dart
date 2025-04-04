@@ -28,12 +28,12 @@ class SummaryController extends GetxController {
 
     Map<int, List<String>> methodsByCategory = {1: [], 2: []};
     Map<String, String> methodNames = {
-      "first": "1. ยาคุมกำเนิดชนิดฮอร์โมนรวม",
-      "second": "2. ยาเม็ดคุมกำเนิดชนิดฮอร์โมนเดี่ยว",
-      "third": "3. ยาฉีดคุมกำเนิดชนิดฮอร์โมนเดี่ยว",
-      "four": "4. ยาฝังคุมกำเนิดชนิด 3 ปี/5 ปี",
-      "five": "5. ห่วงอนามัยชนิดมีฮอร์โมน",
-      "six": "6. ห่วงอนามัยชนิดทองแดง",
+      "first": "ยาคุมกำเนิดชนิดฮอร์โมนรวม",
+      "second": "ยาเม็ดคุมกำเนิดชนิดฮอร์โมนเดี่ยว",
+      "third": "ยาฉีดคุมกำเนิดชนิดฮอร์โมนเดี่ยว",
+      "four": "ยาฝังคุมกำเนิดชนิด 3 ปี/5 ปี",
+      "five": "ห่วงอนามัยชนิดมีฮอร์โมน",
+      "six": "ห่วงอนามัยชนิดทองแดง",
     };
 
     Set<String> addedMethods = {};
@@ -43,9 +43,19 @@ class SummaryController extends GetxController {
       for (var selection in recommendation.selections) {
         methodNames.forEach((key, name) {
           if (selection.recommendLevels.containsKey(key)) {
-            int category =
-                int.tryParse(selection.recommendLevels[key].toString()) ?? 0;
-            if (category > 2) {
+            var rawValue = selection.recommendLevels[key];
+
+            // ตรวจสอบถ้าเป็นลิสต์หรือค่าปกติ
+            List<int> values;
+            if (rawValue is List) {
+              values =
+                  rawValue.map((v) => int.tryParse(v.toString()) ?? 0).toList();
+            } else {
+              values = [int.tryParse(rawValue.toString()) ?? 0];
+            }
+
+            // ถ้ามีค่า 3 หรือ 4 → ห้ามใช้วิธีนี้
+            if (values.contains(3) || values.contains(4)) {
               excludedMethods.add(name);
             }
           }
@@ -57,11 +67,21 @@ class SummaryController extends GetxController {
       for (var selection in recommendation.selections) {
         methodNames.forEach((key, name) {
           if (selection.recommendLevels.containsKey(key)) {
-            int category =
-                int.tryParse(selection.recommendLevels[key].toString()) ?? 0;
-            if ((category == 1 || category == 2) &&
-                !excludedMethods.contains(name) &&
-                !addedMethods.contains(name)) {
+            var rawValue = selection.recommendLevels[key];
+
+            List<int> values;
+            if (rawValue is List) {
+              values =
+                  rawValue.map((v) => int.tryParse(v.toString()) ?? 0).toList();
+            } else {
+              values = [int.tryParse(rawValue.toString()) ?? 0];
+            }
+
+            // ถ้ามีแค่ 1 หรือ 2 และไม่ถูก exclude
+            if (!excludedMethods.contains(name) &&
+                !addedMethods.contains(name) &&
+                (values.contains(1) || values.contains(2))) {
+              int category = values.contains(1) ? 1 : 2;
               methodsByCategory[category]!.add(name);
               addedMethods.add(name);
             }
@@ -84,19 +104,19 @@ class SummaryController extends GetxController {
 
   List<String> getAllMethods() {
     return [
-      "1. ยาคุมกำเนิดชนิดฮอร์โมนรวม",
-      "2. ยาเม็ดคุมกำเนิดชนิดฮอร์โมนเดี่ยว",
-      "3. ยาฉีดคุมกำเนิดชนิดฮอร์โมนเดี่ยว",
-      "4. ยาฝังคุมกำเนิดชนิด 3 ปี/5 ปี",
-      "5. ห่วงอนามัยชนิดมีฮอร์โมน",
-      "6. ห่วงอนามัยชนิดทองแดง",
+      "ยาคุมกำเนิดชนิดฮอร์โมนรวม",
+      "ยาเม็ดคุมกำเนิดชนิดฮอร์โมนเดี่ยว",
+      "ยาฉีดคุมกำเนิดชนิดฮอร์โมนเดี่ยว",
+      "ยาฝังคุมกำเนิดชนิด 3 ปี/5 ปี",
+      "ห่วงอนามัยชนิดมีฮอร์โมน",
+      "ห่วงอนามัยชนิดทองแดง",
     ];
   }
 
   Future<bool> saveToFirestore() async {
     try {
       List<String> conditions = [];
-      for (var recommendation in savedRecommendations) {
+      for (var recommendation in diseaseController.savedRecommendations) {
         for (var selection in recommendation.selections) {
           conditions.add(selection.attribute);
         }

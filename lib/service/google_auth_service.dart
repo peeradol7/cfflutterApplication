@@ -56,7 +56,6 @@ class GoogleAuthService {
               lastName: '',
               password: '',
               birthDay: null,
-              period: null,
               authMethod: 'google',
             );
 

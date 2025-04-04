@@ -1,8 +1,9 @@
 import 'package:fam_care/view/calendar_page/calendar_page.dart';
 import 'package:fam_care/view/disease/disease_detail_page.dart';
-import 'package:fam_care/view/disease/display_disease_list.dart';
 import 'package:fam_care/view/disease/select_disease_page.dart';
 import 'package:fam_care/view/disease/summary_page.dart';
+import 'package:fam_care/view/disease/table_page.dart';
+import 'package:fam_care/view/disease/widget/display_disease_list.dart';
 import 'package:fam_care/view/home_page/home_page.dart';
 import 'package:fam_care/view/home_page/profile_page/profile_page.dart';
 import 'package:fam_care/view/landing_page/langding_page.dart';
@@ -27,11 +28,12 @@ class AppRoutes {
   static const String selectDiseasePage = '/selectDiseasePage';
   static const String displayDiseaseList = '/displayDiseaseList';
   static const String diseaseDetail = '/diseaseDetail';
-  static const String summaryPage = '/summary';
+  static const String tablePage = '/tablePage';
   static const String surveyPage = '/survey';
+  static const String summaryPage = '/summaryPage';
 
   static final GoRouter router = GoRouter(
-    initialLocation: homePage,
+    initialLocation: landingPage,
     routes: [
       GoRoute(
         path: landingPage,
@@ -70,6 +72,10 @@ class AppRoutes {
       GoRoute(
         path: displayDiseaseList,
         builder: (context, state) => DisplayDiseaseList(),
+      ),
+      GoRoute(
+        path: tablePage,
+        builder: (context, state) => TablePage(),
       ),
       GoRoute(
         path: summaryPage,

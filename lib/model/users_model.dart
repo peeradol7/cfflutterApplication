@@ -8,7 +8,6 @@ class UsersModel {
   final String? lastName;
   final String authMethod;
   final DateTime? birthDay;
-  final DateTime? period;
 
   UsersModel({
     this.userId,
@@ -18,7 +17,6 @@ class UsersModel {
     this.firstName,
     this.lastName,
     this.birthDay,
-    this.period,
   });
 
   Map<String, dynamic> toJson() {
@@ -29,7 +27,6 @@ class UsersModel {
       'firstName': firstName,
       'lastName': lastName,
       'birthDay': birthDay?.toIso8601String(),
-      'period': period?.toIso8601String(),
       'authMethod': authMethod,
     };
   }
@@ -46,12 +43,6 @@ class UsersModel {
           : (json['birthDay'] is Timestamp
               ? (json['birthDay'] as Timestamp).toDate()
               : DateTime.tryParse(json['birthDay']) ?? DateTime(2000, 1, 1)),
-      period: json['period'] == null
-          ? null
-          : (json['period'] is Timestamp
-              ? (json['period'] as Timestamp).toDate()
-              : DateTime.tryParse(json['period'] ?? '') ??
-                  DateTime(2000, 1, 1)),
       authMethod: json['authMethod'] ?? '',
     );
   }
@@ -65,7 +56,6 @@ class UsersModel {
       firstName: data['firstName'],
       lastName: data['lastName'],
       birthDay: (data['birthDay'] as Timestamp).toDate(),
-      period: data['period'],
       authMethod: data['authMethod'],
     );
   }

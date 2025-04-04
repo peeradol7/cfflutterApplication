@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
+import '../service/shared_prefercense_service.dart';
+
 class EmailAuthController extends GetxController {
   final EmailAuthService authService = EmailAuthService();
   final UserController userController = Get.put(UserController());
@@ -28,8 +30,6 @@ class EmailAuthController extends GetxController {
             context, "การสมัครสมาชิกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
       }
     } catch (e) {
-      Get.snackbar("ผิดพลาด", e.toString());
-
       _showErrorDialog(
           context, _getReadableSignUpErrorMessage_SignUp(e.toString()));
     } finally {
@@ -40,37 +40,74 @@ class EmailAuthController extends GetxController {
   Future<void> signIn(
       String email, String password, BuildContext context) async {
     isLoading.value = true;
+    print('Starting sign-in process for email: $email');
+
     try {
-      User? userCredential = await authService.signIn(email, password);
+      print('Calling auth service signIn method');
+      User? user = await authService.signIn(email, password);
 
-      if (userCredential != null) {
-        userController.fetchUserDataById(userCredential.uid);
+      if (user != null) {
+        print('Sign-in successful, user ID: ${user.uid}');
 
-        if (userController.userData.value != null) {
-        } else {
+        if (!user.emailVerified) {
           if (context.mounted) {
-            _showErrorDialog(
-                context, "ไม่สามารถดึงข้อมูลผู้ใช้งานได้ กรุณาลองใหม่อีกครั้ง");
+            isLoading.value = false;
+            _showErrorDialog(context, "กรุณายืนยันอีเมลก่อนเข้าสู่ระบบ");
+            await authService.sendEmailVerification();
+            print('Sent verification email to $email');
             return;
           }
         }
 
-        if (context.mounted) {
-          context.go(AppRoutes.homePage);
+        print('Fetching user data for ID: ${user.uid}');
+        await userController.fetchUserDataById(user.uid);
+
+        print(
+            'User data fetch result: ${userController.userData.value != null ? "Data found" : "No data found"}');
+
+        if (userController.userData.value != null) {
+          userData.value = userController.userData.value;
+          SharedPrefercenseService.saveUser(userData.value!);
+          print('User data saved to preferences: ${userData.value}');
+
+          if (context.mounted) {
+            print('Navigation to home page');
+            context.go(AppRoutes.homePage);
+          }
+        } else {
+          if (context.mounted) {
+            print('userData null - no user document found in Firestore');
+            _showErrorDialog(
+                context, "ไม่พบข้อมูลผู้ใช้งาน กรุณาลองใหม่อีกครั้ง");
+            return;
+          }
         }
       } else {
         if (context.mounted) {
+          print('Sign-in returned null user credential');
           _showErrorDialog(
               context, "ล็อกอินไม่สำเร็จ กรุณาตรวจสอบอีเมลและรหัสผ่าน");
         }
       }
-    } catch (e) {
+    } on FirebaseAuthException catch (e) {
+      print('FirebaseAuthException: ${e.code} - ${e.message}');
       if (context.mounted) {
-        String errorMessage = _getReadableErrorMessage_Login(e.toString());
+        String errorMessage = _getReadableErrorMessage_Login(e.code);
+        print('Translated error message: $errorMessage');
+        _showErrorDialog(context, errorMessage);
+      }
+    } catch (e) {
+      print('Sign-in exception: $e');
+      if (context.mounted) {
+        String errorMessage = _getReadableErrorMessage_Login(
+          'unknown',
+        );
+        print('Translated error message: $errorMessage');
         _showErrorDialog(context, errorMessage);
       }
     } finally {
       isLoading.value = false;
+      print('Sign-in process completed');
     }
   }
 
@@ -111,7 +148,7 @@ class EmailAuthController extends GetxController {
     } else if (errorMessage.contains("network-request-failed")) {
       return "เกิดปัญหาการเชื่อมต่อเครือข่าย";
     } else {
-      return "เกิดข้อผิดพลาด: $errorMessage";
+      return "เกิดข้อผิดพลาด: ไม่สามารถเข้าสู่ระบบได้ กรุณาลองใหม่อีกครั้ง";
     }
   }
 
@@ -153,8 +190,7 @@ class EmailAuthController extends GetxController {
         },
       );
     } else {
-      Get.snackbar("เกิดข้อผิดพลาด", errorMessage,
-          snackPosition: SnackPosition.BOTTOM);
+      return;
     }
   }
 

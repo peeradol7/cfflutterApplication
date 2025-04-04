@@ -1,14 +1,13 @@
-import 'package:fam_care/controller/disease_controller.dart';
+import 'package:fam_care/constatnt/title_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../constatnt/title_constants.dart';
+import '../../app_routes.dart';
 import '../../controller/summary_controller.dart';
 
 class SummaryPage extends StatelessWidget {
-  final SummaryController controller = Get.put(SummaryController());
-  final DiseaseController diseaseController = Get.put(DiseaseController());
+  final SummaryController controller = Get.find<SummaryController>();
 
   SummaryPage({super.key});
 
@@ -16,256 +15,350 @@ class SummaryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("ตารางการเลือกวิธีการคุมกำเนิด\nตามเงื่อนไขส่วนตัว"),
+        title: const Text("สรุปผลการเลือกวิธีการคุมกำเนิด"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.home),
+            onPressed: () => context.go(AppRoutes.homePage),
+          ),
+        ],
       ),
-      body: Obx(() => CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal, // กำหนดให้เลื่อนซ้ายขวาได้
-                  child: Container(
-                    // ใช้ Container เพื่อกำหนดความสูงทั้งหมดของส่วนตาราง
-                    // ไม่กำหนดความกว้างเพื่อให้ตารางขยายตามเนื้อหา
-                    height: 400, // ปรับตามความเหมาะสม
-                    child: DataTable(
-                      border: TableBorder.all(color: Colors.black),
-                      columns: [
-                        DataColumn(
-                            label: Text("วิธีการคุมกำเนิด",
-                                style: TextStyle(fontWeight: FontWeight.bold))),
-                        ...buildConditionColumns(),
-                      ],
-                      rows: [
-                        DataRow(cells: [
-                          DataCell(Text(ContentConstants.firstTitle,
-                              style: TextStyle(fontWeight: FontWeight.bold))),
-                          ...buildMethodValues("first"),
-                        ]),
-                        DataRow(cells: [
-                          DataCell(Text(ContentConstants.secondtTitle,
-                              style: TextStyle(fontWeight: FontWeight.bold))),
-                          ...buildMethodValues("second"),
-                        ]),
-                        DataRow(cells: [
-                          DataCell(Text(ContentConstants.thirdTitle,
-                              style: TextStyle(fontWeight: FontWeight.bold))),
-                          ...buildMethodValues("third"),
-                        ]),
-                        DataRow(cells: [
-                          DataCell(Text(ContentConstants.fourthTitle,
-                              style: TextStyle(fontWeight: FontWeight.bold))),
-                          ...buildMethodValues("four"),
-                        ]),
-                        DataRow(cells: [
-                          DataCell(Text(ContentConstants.fivethitle,
-                              style: TextStyle(fontWeight: FontWeight.bold))),
-                          ...buildMethodValues("five"),
-                        ]),
-                        DataRow(
-                          cells: [
-                            DataCell(Text(ContentConstants.sixthitle,
-                                style: TextStyle(fontWeight: FontWeight.bold))),
-                            ...buildMethodValues("six"),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: ElevatedButton.icon(
-                    icon: Obx(() => Icon(controller.isDescriptionVisible.value
-                        ? Icons.visibility_off
-                        : Icons.visibility)),
-                    label: Obx(() => Text(controller.isDescriptionVisible.value
-                        ? "ซ่อนคำอธิบาย"
-                        : "แสดงคำอธิบาย")),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    ),
-                    onPressed: () => controller.isDescriptionVisible.toggle(),
-                  ),
-                ),
-              ),
-              // แสดงส่วน Container เมื่อกดปุ่ม
-              SliverToBoxAdapter(
-                child: Obx(() => controller.isDescriptionVisible.value
-                    ? Container(
-                        padding: EdgeInsets.all(16),
-                        color: Colors.grey[200],
-                        child: SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                ContentConstants.description,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 16),
-                              ),
-                              SizedBox(height: 8),
-                              Text(ContentConstants.firstDescription,
-                                  style: TextStyle(fontSize: 14)),
-                              Text(ContentConstants.secondDescription,
-                                  style: TextStyle(fontSize: 14)),
-                              Text(ContentConstants.thirdDescription,
-                                  style: TextStyle(fontSize: 14)),
-                              Text(ContentConstants.fourthDescription,
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.bold)),
-                              SizedBox(height: 8),
-                              Text(ContentConstants.fivethDescription,
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontStyle: FontStyle.italic)),
-                              SizedBox(height: 16),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      ContentConstants.sixthescription,
-                                      style: TextStyle(fontSize: 13),
-                                    ),
-                                  ),
-                                  SizedBox(width: 10),
-                                  buildSafeMethodDropdown(),
-                                ],
-                              ),
-                              SizedBox(height: 12),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      '• คุณสนใจวิธีคุมกำเนิดวิธีใด จากการแนะนำของเรา: ',
-                                      style: TextStyle(fontSize: 14),
-                                    ),
-                                  ),
-                                  SizedBox(width: 10),
-                                  buildPreferredMethodDropdown(),
-                                ],
-                              ),
-                              SizedBox(height: 20),
-                              Center(
-                                child: ElevatedButton.icon(
-                                  icon: Icon(Icons.save),
-                                  label: Text("บันทึกข้อมูล"),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.green,
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 20, vertical: 12),
-                                  ),
-                                  onPressed: () => saveData(context),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    : SizedBox.shrink()),
-              ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 24),
+              _buildConditionDetailCard(),
+              const SizedBox(height: 24),
+              _buildMethodSummaryCard(),
+              const SizedBox(height: 24),
+              _buildActionButtons(context),
             ],
-          )),
+          ),
+        ),
+      ),
     );
   }
 
-  // Build UI components
-  Widget buildSafeMethodDropdown() {
-    return Obx(() => DropdownButton<String>(
-          value: controller.selectedSafeMethod.value.isEmpty
-              ? null
-              : controller.selectedSafeMethod.value,
-          hint: Text("เลือกวิธีที่ปลอดภัย"),
-          items: controller.getSafeMethods().map((dynamic value) {
-            String stringValue = value.toString();
-            return DropdownMenuItem<String>(
-              value: stringValue,
-              child: Text(stringValue),
-            );
-          }).toList(),
-          onChanged: (newValue) {
-            controller.selectedSafeMethod.value = newValue ?? "";
-          },
-        ));
-  }
-
-  Widget buildPreferredMethodDropdown() {
-    return Obx(() => DropdownButton<String>(
-          value: controller.selectedPreferredMethod.value.isEmpty
-              ? null
-              : controller.selectedPreferredMethod.value,
-          hint: Text("เลือกวิธีที่สนใจ"),
-          items: controller.getAllMethods().map((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
-          onChanged: (newValue) {
-            controller.selectedPreferredMethod.value = newValue ?? "";
-          },
-        ));
-  }
-
-  List<DataColumn> buildConditionColumns() {
-    Map<String, List<String>> uniqueDiseaseAttributes =
-        controller.getUniqueDiseaseAttributes();
-    List<DataColumn> columns = [];
-    int columnCount = 1;
-
-    uniqueDiseaseAttributes.forEach((diseaseType, attributes) {
-      for (var attribute in attributes) {
-        columns.add(
-          DataColumn(
-            label: Text(
-              "เงื่อนไขที่ $columnCount\n$attribute",
-              style: TextStyle(fontWeight: FontWeight.bold),
+  Widget _buildMethodSummaryCard() {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "สรุปวิธีการคุมกำเนิด",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-        );
-        columnCount++;
-      }
-    });
-
-    return columns;
+            const Divider(),
+            Obx(() => Table(
+                  border: TableBorder.all(
+                    color: Colors.grey.shade300,
+                    width: 1,
+                  ),
+                  columnWidths: const {
+                    0: FlexColumnWidth(3),
+                    1: FlexColumnWidth(2),
+                  },
+                  children: [
+                    _buildTableRow(
+                      "วิธีที่ปลอดภัยสำหรับคุณ",
+                      controller.selectedSafeMethod.value,
+                      isHeader: true,
+                      textColor: Colors.green,
+                    ),
+                    _buildTableRow(
+                      "วิธีที่คุณสนใจ",
+                      controller.selectedPreferredMethod.value,
+                      textColor: Colors.blue,
+                    ),
+                  ],
+                )),
+            const SizedBox(height: 16),
+            const Text(
+              "คำอธิบายหมวดหมู่",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            _buildCategoryExplanation(
+                "หมวด 1", "ใช้วิธีนี้ได้ทุกกรณี", Colors.green.shade100),
+            _buildCategoryExplanation(
+                "หมวด 2",
+                "ใช้วิธีนี้ได้โดยทั่วไป (หากใช้ได้ทั้งวิธีในหมวด 1 และ 2 ให้เลือกใช้หมวด 1 ก่อน)",
+                Colors.blue.shade100),
+            _buildCategoryExplanation(
+                "หมวด 3",
+                "ไม่ควรใช้วิธีนี้ ยกเว้นไม่สามารถจัดหาวิธีที่เหมาะสมกว่านี้ ใช้ได้ภายใต้ข้อพิจารณาของบุคลากรทางการแพทย์",
+                Colors.orange.shade100),
+            _buildCategoryExplanation(
+                "หมวด 4", "ห้ามใช้วิธีนี้", Colors.red.shade100),
+          ],
+        ),
+      ),
+    );
   }
 
-  List<DataCell> buildMethodValues(String methodKey) {
-    List<DataCell> cells = [];
-    Map<String, List<String>> uniqueDiseaseAttributes =
-        controller.getUniqueDiseaseAttributes();
-    Map<String, Map<String, String>> methodValues =
-        controller.getMethodValues();
+  Widget _buildConditionDetailCard() {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "รายละเอียดตามเงื่อนไขส่วนตัว",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const Divider(),
+            const SizedBox(height: 8),
+            Obx(() {
+              Map<String, List<String>> uniqueDiseaseAttributes =
+                  controller.getUniqueDiseaseAttributes();
+              Map<String, Map<String, dynamic>> methodValues =
+                  controller.getMethodValues();
+              List<Widget> conditionWidgets = [];
 
-    uniqueDiseaseAttributes.forEach((diseaseType, attributes) {
-      for (var attribute in attributes) {
-        String key = "$diseaseType-$attribute";
-        String value = methodValues[key]?[methodKey] ?? "";
-        bool isHighlighted = (value == "3" || value == "4");
+              // เพิ่มหมายเหตุ
+              conditionWidgets.add(
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.yellow.shade100,
+                    border: Border.all(color: Colors.yellow.shade800),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.info_outline, color: Colors.orange),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          "หมายเหตุ: ทุกวิธีแนะนำให้ใช้ร่วมกับถุงยางอนามัยสำหรับผู้ชายหรือผู้หญิง เพื่อป้องกันโรคติดต่อทางเพศสัมพันธ์/เชื้อเอชไอวี",
+                          style: TextStyle(fontStyle: FontStyle.italic),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
 
-        cells.add(
-          DataCell(
-            Text(
-              value,
-              maxLines: 3,
-              style: isHighlighted
-                  ? TextStyle(color: Colors.red, fontWeight: FontWeight.bold)
-                  : null,
+              int conditionIndex = 1;
+              uniqueDiseaseAttributes.forEach((diseaseType, attributes) {
+                for (var attribute in attributes) {
+                  String key = "$diseaseType-$attribute";
+
+                  conditionWidgets.add(
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            "เงื่อนไขที่ $conditionIndex:$diseaseType \n$attribute",
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Table(
+                          border: TableBorder.all(color: Colors.grey.shade300),
+                          columnWidths: const {
+                            0: FlexColumnWidth(3),
+                            1: FlexColumnWidth(1),
+                          },
+                          children: _buildMethodCategoryRows(key, methodValues),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+                  );
+                  conditionIndex++;
+                }
+              });
+
+              return Column(children: conditionWidgets);
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<TableRow> _buildMethodCategoryRows(
+      String conditionKey, Map<String, Map<String, dynamic>> methodValues) {
+    List<TableRow> rows = [];
+    Map<String, dynamic>? conditionData = methodValues[conditionKey];
+
+    if (conditionData == null) {
+      return [
+        TableRow(
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text("ไม่มีข้อมูล"),
+            ),
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text("-"),
+            ),
+          ],
+        ),
+      ];
+    }
+
+    rows.add(TableRow(
+      decoration: BoxDecoration(color: Colors.grey.shade200),
+      children: [
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text("วิธีการคุมกำเนิด",
+              style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text("หมวด", style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+      ],
+    ));
+
+    for (int i = 0; i < ContentConstants.keys.length; i++) {
+      var methodKey = ContentConstants.keys[i];
+      var methodTitle = ContentConstants.contraceptiveTitles[i];
+      var category = conditionData[methodKey];
+
+      if (category.toString().contains("4")) {
+        continue;
+      }
+      if (category.toString().contains("3")) {
+        continue;
+      }
+
+      Color textColor = Colors.black;
+      if (category.toString().contains("1")) {
+        textColor = Colors.green;
+      } else if (category.toString().contains("2")) {
+        textColor = Colors.blue;
+      }
+
+      rows.add(TableRow(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(methodTitle),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              category.toString(),
+              style: TextStyle(
+                color: textColor,
+                fontWeight: FontWeight.bold,
+              ),
               textAlign: TextAlign.center,
             ),
           ),
-        );
-      }
-    });
+        ],
+      ));
+    }
 
-    return cells;
+    return rows;
+  }
+
+  Widget _buildActionButtons(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton.icon(
+          icon: const Icon(
+            Icons.save,
+            color: Colors.white,
+          ),
+          label: const Text("บันทึกข้อมูล"),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          ),
+          onPressed: () {
+            saveData(context);
+          },
+        ),
+      ],
+    );
+  }
+
+  TableRow _buildTableRow(String label, String value,
+      {bool isHeader = false, Color textColor = Colors.black}) {
+    return TableRow(
+      decoration: BoxDecoration(
+        color: isHeader ? Colors.grey.shade100 : Colors.white,
+      ),
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Text(
+            value,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: textColor,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCategoryExplanation(
+      String category, String explanation, Color bgColor) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "$category: ",
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Expanded(
+            child: Text(explanation),
+          ),
+        ],
+      ),
+    );
   }
 
   void saveData(BuildContext context) async {
@@ -311,7 +404,7 @@ class SummaryPage extends StatelessWidget {
         ),
       );
 
-      context.pop();
+      context.go(AppRoutes.homePage);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

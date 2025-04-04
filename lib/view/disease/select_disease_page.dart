@@ -193,7 +193,7 @@ class _SelectDiseasePageState extends State<SelectDiseasePage> {
                 width: double.infinity,
                 child: TextButton.icon(
                   onPressed: () {
-                    context.push(AppRoutes.summaryPage);
+                    context.push(AppRoutes.tablePage);
                   },
                   icon: Icon(Icons.table_chart_outlined),
                   label: Text(
