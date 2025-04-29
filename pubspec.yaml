@@ -50,6 +50,7 @@ dependencies:
   dashed_circle: ^0.0.2
   flutter_dash: ^1.0.0
   flutter_launcher_icons: ^0.14.3
+  flutter_html: ^3.0.0
   
 
 dev_dependencies:
