@@ -6,6 +6,7 @@ import 'package:fam_care/view/disease/table_page.dart';
 import 'package:fam_care/view/disease/widget/display_disease_list.dart';
 import 'package:fam_care/view/home_page/home_page.dart';
 import 'package:fam_care/view/home_page/profile_page/profile_page.dart';
+import 'package:fam_care/view/knowledge/knowledge_page.dart';
 import 'package:fam_care/view/landing_page/langding_page.dart';
 import 'package:fam_care/view/login_page/login_page.dart';
 import 'package:fam_care/view/register_page/register_page.dart';
@@ -31,6 +32,7 @@ class AppRoutes {
   static const String tablePage = '/tablePage';
   static const String surveyPage = '/survey';
   static const String summaryPage = '/summaryPage';
+  static const String knowledge = '/knowledge';
 
   static final GoRouter router = GoRouter(
     initialLocation: landingPage,
@@ -46,6 +48,10 @@ class AppRoutes {
       GoRoute(
         path: loginPage,
         builder: (context, state) => LoginScreen(),
+      ),
+      GoRoute(
+        path: knowledge,
+        builder: (context, state) => KnowledgePage(),
       ),
       GoRoute(
         path: registerpage,

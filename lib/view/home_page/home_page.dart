@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fam_care/app_routes.dart';
 import 'package:fam_care/constatnt/app_colors.dart';
 import 'package:fam_care/controller/user_controller.dart';
+import 'package:fam_care/service/knowledge_service.dart';
 import 'package:fam_care/view/home_page/widget/logout_dialog_widget.dart';
 import 'package:fam_care/view/home_page/widget/person_data_widget.dart';
 import 'package:flutter/material.dart';
@@ -17,11 +18,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final UserController _controller = Get.put(UserController());
+  final service = KnowledgeService();
 
   @override
   void initState() {
     super.initState();
     _controller.loadUserFromPrefs();
+    service.getKnowledgeTitles();
   }
 
   Future<void> addKnowledge() async {
@@ -99,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             Container(
-              height: 80,
+              height: 50,
               decoration: BoxDecoration(
                 color: AppColors.primary,
                 borderRadius: BorderRadius.only(
@@ -117,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Card(
                       color: AppColors.color8,
-                      elevation: 4,
+                      elevation: 3,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
@@ -217,12 +220,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                 context.push(AppRoutes.surveyPage);
                               },
                             ),
+                            SizedBox(height: 16),
                             _buildServiceCard(
                               context: context,
-                              title: 'AddDATA',
-                              icon: Icons.assignment_rounded,
-                              color: AppColors.color5,
-                              onTap: () {},
+                              title: 'ความรู้เกี่ยวกับวิธีคุมกำเนิด',
+                              icon: Icons.book,
+                              color: AppColors.secondary,
+                              onTap: () {
+                                context.push(AppRoutes.knowledge);
+                              },
                             ),
                           ],
                         ),
