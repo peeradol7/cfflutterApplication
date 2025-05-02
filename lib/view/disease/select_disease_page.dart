@@ -158,34 +158,38 @@ class _SelectDiseasePageState extends State<SelectDiseasePage> {
                       ),
               ),
               SizedBox(height: 20),
-              Obx(() => ElevatedButton.icon(
-                    onPressed: diseaseController.selectedDiseases.length >= 4
-                        ? null
-                        : () async {
-                            final result = await context
-                                .push(AppRoutes.displayDiseaseList);
-                            if (result != null && result is String) {
-                              if (!diseaseController.selectedDiseases
-                                  .contains(result)) {
-                                diseaseController.selectedDiseases.add(result);
+              Obx(() => Align(
+                    alignment: Alignment.centerRight,
+                    child: ElevatedButton.icon(
+                      onPressed: diseaseController.selectedDiseases.length >= 4
+                          ? null
+                          : () async {
+                              final result = await context
+                                  .push(AppRoutes.displayDiseaseList);
+                              if (result != null && result is String) {
+                                if (!diseaseController.selectedDiseases
+                                    .contains(result)) {
+                                  diseaseController.selectedDiseases
+                                      .add(result);
+                                }
                               }
-                            }
-                          },
-                    label: Text(
-                      diseaseController.selectedDiseases.length >= 4
-                          ? "เพิ่มได้สูงสุด 4 โรค"
-                          : "เพิ่มโรค",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.color5,
-                      foregroundColor: Colors.white,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                            },
+                      label: Text(
+                        diseaseController.selectedDiseases.length >= 4
+                            ? "เพิ่มได้สูงสุด 4 โรค"
+                            : "เพิ่มโรค",
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      disabledBackgroundColor: Colors.grey[400],
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.color5,
+                        foregroundColor: Colors.white,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        disabledBackgroundColor: Colors.grey[400],
+                      ),
                     ),
                   )),
               SizedBox(height: 20),

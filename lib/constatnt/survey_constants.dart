@@ -11,9 +11,14 @@ class SurveyConstants {
   static const String role = '';
   static const Map<String, dynamic> roleInfo = {
     'role': {
-      'label': 'คุณเป็นบุคคลทั่วไปหรือผู้ป่วยของโรงพยาบาล ',
+      'label': 'ระบุสถานะของคุณ',
       'type': 'radio',
-      'options': ['ผู้ป่วยของโรงพยาบาล', 'บุคคลทั่วไป'],
+      'options': [
+        'บุคคลทั่วไป',
+        'บุคลากรทางการแพทย์',
+        'ผู้ป่าวยของรพ. (บันทึกข้อมูลเอง)',
+        'ผู้ป่าวยของรพ. (บุคลากรทางการแพทย์ช่วยบันทึกข้อมูล)'
+      ],
     },
   };
   static const String SECTION_1_TITLE = '1. ข้อมูลทั่วไป';

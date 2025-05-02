@@ -13,6 +13,7 @@ import 'package:fam_care/view/register_page/register_page.dart';
 import 'package:fam_care/view/register_page/reset_password_page.dart';
 import 'package:go_router/go_router.dart';
 
+import 'view/knowledge/knowledge_detial_page.dart';
 import 'view/survey/contraception_form_page.dart';
 
 class AppRoutes {
@@ -33,9 +34,10 @@ class AppRoutes {
   static const String surveyPage = '/survey';
   static const String summaryPage = '/summaryPage';
   static const String knowledge = '/knowledge';
+  static const String knowledgeDetail = '/knowledgeDetail';
 
   static final GoRouter router = GoRouter(
-    initialLocation: landingPage,
+    initialLocation: homePage,
     routes: [
       GoRoute(
         path: landingPage,
@@ -96,6 +98,13 @@ class AppRoutes {
         builder: (context, state) {
           final id = state.pathParameters['id'] ?? '';
           return DiseaseDetailPage(id: id);
+        },
+      ),
+      GoRoute(
+        path: '$knowledgeDetail/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id'] ?? '';
+          return KnowledgeDetailPage(id: id);
         },
       ),
       GoRoute(
