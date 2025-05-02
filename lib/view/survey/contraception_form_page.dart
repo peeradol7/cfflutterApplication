@@ -72,6 +72,8 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
     textControllers.forEach((key, controller) {
       controller.dispose();
     });
+    final userId = controller.userData.value!.userId;
+    controller.fetchUserDataById(userId!);
     super.dispose();
   }
 
@@ -597,7 +599,8 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
         dependencies.forEach((depKey, depValue) {
           if (depKey.startsWith('reason_for_contraception') ||
               depKey.startsWith('previous_methods') ||
-              depKey.startsWith('important_factors')) {
+              depKey.startsWith('important_factors') ||
+              depKey.startsWith('current_situation')) {
             if (!multipleSelectionAnswers.containsKey(depKey) ||
                 !multipleSelectionAnswers[depKey]!.contains(depValue)) {
               shouldDisplay = false;
@@ -638,6 +641,9 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
         );
 
         if (data['type'] == 'text') {
+          String hintText = data.containsKey('placeholder')
+              ? data['placeholder']
+              : 'กรอกข้อมูล';
           fields.add(
             Padding(
               padding:
@@ -661,7 +667,7 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
                     border: InputBorder.none,
                     contentPadding:
                         EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    hintText: 'Type here...',
+                    hintText: hintText,
                     hintStyle: TextStyle(color: Colors.grey.shade400),
                   ),
                   onChanged: (value) {
@@ -875,29 +881,82 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
                                     multipleSelectionAnswers[key] = [];
                                   }
 
-                                  if (value == true) {
-                                    if (multipleSelectionAnswers[key]!.length <
-                                        maxSelection) {
-                                      multipleSelectionAnswers[key]!
-                                          .add(option);
+                                  // Special handling for "ไม่รู้จักเลย" option
+                                  if (key == 'knowledge_methods') {
+                                    if (option == 'ไม่รู้จักเลย') {
+                                      if (value == true) {
+                                        // Clear all other selections and just select "ไม่รู้จักเลย"
+                                        multipleSelectionAnswers[key] = [
+                                          'ไม่รู้จักเลย'
+                                        ];
+                                      } else {
+                                        // If unchecking "ไม่รู้จักเลย", just remove it
+                                        multipleSelectionAnswers[key]!
+                                            .remove('ไม่รู้จักเลย');
+                                      }
                                     } else {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            SurveyConstants
-                                                .MAX_SELECTION_WARNING
-                                                .replaceAll('{max}',
-                                                    maxSelection.toString()),
-                                          ),
-                                          duration: Duration(seconds: 2),
-                                          backgroundColor: AppColors.color3,
-                                        ),
-                                      );
+                                      if (value == true) {
+                                        // If selecting any other option, remove "ไม่รู้จักเลย" if it exists
+                                        multipleSelectionAnswers[key]!
+                                            .remove('ไม่รู้จักเลย');
+                                        // Add the selected option
+                                        if (multipleSelectionAnswers[key]!
+                                                    .length <
+                                                maxSelection ||
+                                            maxSelection == 999) {
+                                          multipleSelectionAnswers[key]!
+                                              .add(option);
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                SurveyConstants
+                                                    .MAX_SELECTION_WARNING
+                                                    .replaceAll(
+                                                        '{max}',
+                                                        maxSelection
+                                                            .toString()),
+                                              ),
+                                              duration: Duration(seconds: 2),
+                                              backgroundColor: AppColors.color3,
+                                            ),
+                                          );
+                                        }
+                                      } else {
+                                        // If unchecking any option, just remove it
+                                        multipleSelectionAnswers[key]!
+                                            .remove(option);
+                                      }
                                     }
                                   } else {
-                                    multipleSelectionAnswers[key]!
-                                        .remove(option);
+                                    // Normal checkbox behavior for other fields
+                                    if (value == true) {
+                                      if (multipleSelectionAnswers[key]!
+                                                  .length <
+                                              maxSelection ||
+                                          maxSelection == 999) {
+                                        multipleSelectionAnswers[key]!
+                                            .add(option);
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              SurveyConstants
+                                                  .MAX_SELECTION_WARNING
+                                                  .replaceAll('{max}',
+                                                      maxSelection.toString()),
+                                            ),
+                                            duration: Duration(seconds: 2),
+                                            backgroundColor: AppColors.color3,
+                                          ),
+                                        );
+                                      }
+                                    } else {
+                                      multipleSelectionAnswers[key]!
+                                          .remove(option);
+                                    }
                                   }
                                 });
                               },
@@ -936,27 +995,11 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
   Future<void> generateAndOpenPDF(BuildContext context) async {
     final font = await PdfGoogleFonts.sarabunRegular();
     final boldFont = await PdfGoogleFonts.sarabunBold();
-
+    final userId = await SharedPrefercenseService().getUserId();
+    final isCompleted = await controller.updateIsSurveyCompleted(userId!);
+    SharedPrefercenseService().updateIsServeyCompleted(isCompleted);
     final pdf = pw.Document();
-    // debugPrint('Form Title: ${SurveyConstants.FORM_TITLE}');
-    // debugPrint('Section 1 Title: ${SurveyConstants.SECTION_1_TITLE}');
-    // debugPrint('General Info: ${SurveyConstants.GENERAL_INFO}');
-    // debugPrint('Health Info: ${SurveyConstants.HEALTH_INFO}');
-    // debugPrint('Planning Info: ${SurveyConstants.PLANNING_INFO}');
-    // debugPrint('Knowledge Info: ${SurveyConstants.KNOWLEDGE_INFO}');
-    // debugPrint('Convenience Info: ${SurveyConstants.CONVENIENCE_INFO}');
-    // debugPrint('Risk Info: ${SurveyConstants.RISK_INFO}');
-    // debugPrint('Personal Opinion: ${SurveyConstants.PERSONAL_OPINION}');
-    // debugPrint('Expert Consultation: ${SurveyConstants.EXPERT_CONSULTATION}');
 
-    debugPrint('General Answers: $generalAnswers');
-    debugPrint('Health Answers: $healthAnswers');
-    debugPrint('Planning Answers: $planningAnswers');
-    debugPrint('Knowledge Answers: $knowledgeAnswers');
-    debugPrint('Convenience Answers: $convenienceAnswers');
-    debugPrint('Risk Answers: $riskAnswers');
-    debugPrint('Opinion Answers: $opinionAnswers');
-    debugPrint('Consultation Answers: $consultationAnswers');
     pdf.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,

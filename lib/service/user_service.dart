@@ -71,4 +71,17 @@ class UserService {
       return false;
     }
   }
+
+  Future<bool> updateIsSurveyCompleted(String userId) async {
+    try {
+      await _firestore
+          .collection(usersCollections)
+          .doc(userId)
+          .update({'isServeyCompleted': true});
+      return true;
+    } catch (e) {
+      print('Error updating isSurveyCompleted: $e');
+      return false;
+    }
+  }
 }

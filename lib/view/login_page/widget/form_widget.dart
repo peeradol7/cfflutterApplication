@@ -88,7 +88,7 @@ class FormWidget extends StatelessWidget {
                 },
                 child: RichText(
                   text: TextSpan(
-                    text: 'อ่านข้อตกลงการเก็บข้อมูล',
+                    text: 'กรุณาอ่านข้อตกลงการเก็บข้อมูล',
                     style: const TextStyle(
                       color: Colors.blue,
                       fontSize: 14,

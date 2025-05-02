@@ -20,6 +20,24 @@ class SharedPrefercenseService {
     print('User Saved **** $userKey');
   }
 
+  Future<void> updateIsServeyCompleted(bool isCompleted) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userJson = prefs.getString(userKey);
+
+    if (userJson != null) {
+      final currentUser = UsersModel.fromJson(jsonDecode(userJson));
+
+      currentUser.isServeyCompleted = isCompleted;
+
+      final updatedJson = jsonEncode(currentUser.toJson());
+      await prefs.setString(userKey, updatedJson);
+
+      print('User isCompleted updated to $isCompleted');
+    } else {
+      print('No existing user data to update.');
+    }
+  }
+
   Future<UsersModel?> getUser() async {
     final prefs = await SharedPreferences.getInstance();
     final userJson = prefs.getString(userKey);
@@ -67,7 +85,7 @@ class SharedPrefercenseService {
 
   Future<String?> getUserId() async {
     final prefs = await SharedPreferences.getInstance();
-    final userJson = prefs.getString(userKey!);
+    final userJson = prefs.getString(userKey);
 
     if (userJson == null) return null;
 

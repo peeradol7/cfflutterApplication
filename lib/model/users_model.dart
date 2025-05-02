@@ -7,6 +7,7 @@ class UsersModel {
   final String? firstName;
   final String? lastName;
   final String authMethod;
+  bool isServeyCompleted;
   final DateTime? birthDay;
 
   UsersModel({
@@ -17,12 +18,14 @@ class UsersModel {
     this.firstName,
     this.lastName,
     this.birthDay,
+    this.isServeyCompleted = false,
   });
 
   Map<String, dynamic> toJson() {
     return {
       'userId': userId,
       'email': email,
+      'isServeyCompleted': isServeyCompleted,
       'password': password,
       'firstName': firstName,
       'lastName': lastName,
@@ -36,6 +39,7 @@ class UsersModel {
       userId: json['userId'] ?? '',
       email: json['email'] ?? '',
       firstName: json['firstName'] ?? '',
+      isServeyCompleted: json['isServeyCompleted'] ?? false,
       lastName: json['lastName'] ?? '',
       password: json['password'] ?? '',
       birthDay: json['birthDay'] == null
@@ -52,6 +56,7 @@ class UsersModel {
     return UsersModel(
       userId: data['userId'],
       email: data['email'],
+      isServeyCompleted: data['isServeyCompleted'] ?? false,
       password: data['password'],
       firstName: data['firstName'],
       lastName: data['lastName'],

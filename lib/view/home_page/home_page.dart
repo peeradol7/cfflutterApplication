@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
+import '../widget/app_snackbar.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -25,6 +27,11 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _controller.loadUserFromPrefs();
     service.getKnowledgeTitles();
+  }
+
+  Future<bool> getIsSelect() async {
+    _controller.userData.value!.isServeyCompleted ?? false;
+    return _controller.userData.value!.isServeyCompleted;
   }
 
   Future<void> addKnowledge() async {
@@ -192,44 +199,56 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             SizedBox(height: 20),
                             _buildServiceCard(
-                              context: context,
-                              title: 'เลือกวิธีคุมกำเนิด',
-                              icon: Icons.health_and_safety_rounded,
-                              color: Colors.pinkAccent[100]!,
-                              onTap: () {
-                                context.push(AppRoutes.selectDiseasePage);
-                              },
-                            ),
+                                context: context,
+                                title: 'ทำแบบสอบถาม',
+                                icon: Icons.assignment_rounded,
+                                color: AppColors.color5,
+                                onTap: () {
+                                  context.push(AppRoutes.surveyPage);
+                                },
+                                isEnabled: true),
                             SizedBox(height: 16),
-                            _buildServiceCard(
-                              context: context,
-                              title: 'บันทึกรอบประจำเดือน',
-                              icon: Icons.calendar_month_rounded,
-                              color: Colors.redAccent[100]!,
-                              onTap: () {
-                                context.push(AppRoutes.calendarPage);
-                              },
-                            ),
-                            SizedBox(height: 16),
-                            _buildServiceCard(
-                              context: context,
-                              title: 'ทำแบบสอบถาม',
-                              icon: Icons.assignment_rounded,
-                              color: AppColors.color5,
-                              onTap: () {
-                                context.push(AppRoutes.surveyPage);
-                              },
-                            ),
-                            SizedBox(height: 16),
-                            _buildServiceCard(
-                              context: context,
-                              title: 'ความรู้เกี่ยวกับวิธีคุมกำเนิด',
-                              icon: Icons.book,
-                              color: AppColors.secondary,
-                              onTap: () {
-                                context.push(AppRoutes.knowledge);
-                              },
-                            ),
+                            Obx(() {
+                              return Column(
+                                children: [
+                                  _buildServiceCard(
+                                      context: context,
+                                      title: 'เลือกวิธีคุมกำเนิด',
+                                      icon: Icons.health_and_safety_rounded,
+                                      color: Colors.pinkAccent[100]!,
+                                      onTap: () {
+                                        context
+                                            .push(AppRoutes.selectDiseasePage);
+                                      },
+                                      isEnabled:
+                                          _controller.isSurveyCompleted.value),
+                                  SizedBox(height: 16),
+                                  _buildServiceCard(
+                                    context: context,
+                                    title: 'บันทึกรอบประจำเดือน',
+                                    icon: Icons.calendar_month_rounded,
+                                    color: Colors.redAccent[100]!,
+                                    onTap: () {
+                                      context.push(AppRoutes.calendarPage);
+                                    },
+                                    isEnabled:
+                                        _controller.isSurveyCompleted.value,
+                                  ),
+                                  SizedBox(height: 16),
+                                  _buildServiceCard(
+                                    context: context,
+                                    title: 'ความรู้เกี่ยวกับวิธีคุมกำเนิด',
+                                    icon: Icons.book,
+                                    color: AppColors.secondary,
+                                    onTap: () {
+                                      context.push(AppRoutes.knowledge);
+                                    },
+                                    isEnabled:
+                                        _controller.isSurveyCompleted.value,
+                                  ),
+                                ],
+                              );
+                            }),
                           ],
                         ),
                       ),
@@ -251,9 +270,18 @@ class _HomeScreenState extends State<HomeScreen> {
     required IconData icon,
     required Color color,
     required VoidCallback onTap,
+    required bool isEnabled,
   }) {
     return InkWell(
-      onTap: onTap,
+      onTap: isEnabled
+          ? onTap
+          : () {
+              print(isEnabled);
+              AppSnackbar.error(
+                context,
+                'กรุณาทำแบบสอบถามก่อนใช้งาน',
+              );
+            },
       borderRadius: BorderRadius.circular(16),
       child: Container(
         decoration: BoxDecoration(

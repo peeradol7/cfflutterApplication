@@ -69,22 +69,6 @@ class _KnowledgePageState extends State<KnowledgePage> {
                       AppColors.color6,
                       AppColors.color8,
                     ];
-                    List<Color> iconColors = [
-                      AppColors.color5,
-                      AppColors.primary,
-                      AppColors.color5,
-                      AppColors.primary,
-                      AppColors.color5,
-                      AppColors.primary,
-                    ];
-                    List<IconData> icons = [
-                      Icons.medication_rounded,
-                      Icons.vaccines_rounded,
-                      Icons.health_and_safety_rounded,
-                      Icons.loop_rounded,
-                      Icons.healing_rounded,
-                      Icons.calendar_month_rounded,
-                    ];
 
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12),

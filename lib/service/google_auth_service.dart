@@ -56,6 +56,7 @@ class GoogleAuthService {
               lastName: '',
               password: '',
               birthDay: null,
+              isServeyCompleted: false,
               authMethod: 'google',
             );
 
@@ -66,7 +67,6 @@ class GoogleAuthService {
 
             SharedPrefercenseService.saveUser(userModel);
 
-            print('New user, data created and saved');
             return user;
           }
         } catch (firestoreError) {

@@ -22,6 +22,7 @@ class UserController extends GetxController {
   RxBool isLoading = false.obs;
   RxBool isSaving = false.obs;
   RxBool isApprove = false.obs;
+  RxBool isSurveyCompleted = false.obs;
 
   Future<void> loadUserFromPrefs() async {
     isLoading.value = true;
@@ -68,6 +69,7 @@ class UserController extends GetxController {
         firstNameController.text = userData.value!.firstName ?? '';
         lastNameController.text = userData.value!.lastName ?? '';
         birthDate.value = userData.value?.birthDay;
+        isSurveyCompleted.value = userData.value?.isServeyCompleted ?? false;
       } else {
         print('Controller: No user data found in Firestore');
       }
@@ -96,13 +98,13 @@ class UserController extends GetxController {
 
       if (success) {
         final updatedUser = UsersModel(
-          userId: userId,
-          email: userData.value?.email,
-          firstName: firstNameController.text,
-          lastName: lastNameController.text,
-          birthDay: birthDate.value,
-          authMethod: authMethod,
-        );
+            userId: userId,
+            email: userData.value?.email,
+            firstName: firstNameController.text,
+            lastName: lastNameController.text,
+            birthDay: birthDate.value,
+            authMethod: authMethod,
+            isServeyCompleted: false);
 
         userData.value = updatedUser;
         SharedPrefercenseService.saveUser(updatedUser);
@@ -151,6 +153,16 @@ class UserController extends GetxController {
 
   DateTime calculateNextPeriod(DateTime lastPeriod, {int cycleDays = 28}) {
     return lastPeriod.add(Duration(days: cycleDays));
+  }
+
+  Future<bool> updateIsSurveyCompleted(String userId) async {
+    try {
+      await _userService.updateIsSurveyCompleted(userId);
+      return true;
+    } catch (e) {
+      print('Error updating isSurveyCompleted: $e');
+      return false;
+    }
   }
 
   @override

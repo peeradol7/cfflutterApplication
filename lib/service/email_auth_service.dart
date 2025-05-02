@@ -47,7 +47,6 @@ class EmailAuthService {
 
       User? user = userCredential.user;
 
-      // Check if user exists and email is verified
       if (user != null) {
         if (user.emailVerified) {
           print(
@@ -89,6 +88,7 @@ class EmailAuthService {
         "age": _calculateAge(user.birthDay!),
         "birthDay": user.birthDay!.toIso8601String(),
         "authMethod": 'email',
+        "isServeyCompleted": false,
       },
     );
     print(uid);

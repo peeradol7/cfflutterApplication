@@ -52,6 +52,7 @@ class _RegisterPageState extends State<RegisterPage> {
         firstName: firstNameController.text.trim(),
         lastName: lastNameController.text.trim(),
         password: passwordController.text.trim(),
+        isServeyCompleted: false,
         birthDay: _birthDate,
         authMethod: 'email',
       );

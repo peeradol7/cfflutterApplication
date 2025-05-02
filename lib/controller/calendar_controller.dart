@@ -47,32 +47,22 @@ class CalendarController extends GetxController {
 
     print('Debug: Sorted Dates = $sortedDates');
 
-    if (sortedDates.isEmpty) return [];
+    List<DateTime> allPredictedPeriods = [];
 
-    List<int> periodDays = sortedDates.map((date) => date.day).toList();
-    print('Debug: Period Days = $periodDays');
+    for (DateTime originalDate in sortedDates) {
+      for (int i = 1; i <= 12; i++) {
+        DateTime nextDate = originalDate.add(Duration(days: 28 * i));
+        allPredictedPeriods.add(nextDate);
+        print('From $originalDate → Cycle $i: $nextDate');
+      }
+    }
 
-    DateTime lastPeriod = sortedDates.last;
-    print('Debug: Last Period = $lastPeriod');
+    allPredictedPeriods.sort();
 
-    List<DateTime> nextPeriodDates = periodDays.map((originalDay) {
-      // Find the original date with this day
-      DateTime originalDate =
-          sortedDates.firstWhere((date) => date.day == originalDay);
+    print(
+        'Predicted Period Dates (12 rounds for each input) → $allPredictedPeriods');
 
-      // Calculate the next period date by adding 28 days to the original date
-      DateTime calculatedDate = originalDate.add(Duration(days: 28));
-
-      print(
-          'Debug: Original Day = $originalDay, Original Date = $originalDate, Calculated Date = $calculatedDate');
-
-      return calculatedDate;
-    }).toList();
-
-    print('menstrualDates *** $menstrualDates');
-    print('nextPeriodDates ** $nextPeriodDates');
-
-    return nextPeriodDates;
+    return allPredictedPeriods;
   }
 
   void updateMenstrualDates(List<String> dates) {
