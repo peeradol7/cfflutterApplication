@@ -1,10 +1,12 @@
 class DiseaseModel {
   String id;
   String type;
+  final String? info;
   List<Recommendation> recommendations;
 
   DiseaseModel({
     required this.id,
+    required this.info,
     required this.type,
     required this.recommendations,
   });
@@ -13,6 +15,7 @@ class DiseaseModel {
     return DiseaseModel(
       id: id,
       type: json['type'] ?? '',
+      info: json['info'] ?? '',
       recommendations: (json['recommendations'] as List<dynamic>?)
               ?.map((e) => Recommendation.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -23,6 +26,7 @@ class DiseaseModel {
   Map<String, dynamic> toJson() {
     return {
       'type': type,
+      'info': info,
       'recommendations': recommendations.map((e) => e.toJson()).toList(),
     };
   }

@@ -65,6 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 24),
               Obx(
                 () => customButton.btnSignUp(
+                  isEnabled: userController.isApprove.value,
                   iconPath: 'assets/icons/google.png',
                   onPressed: googleAuthController.isLoading.value
                       ? null

@@ -1,37 +1,46 @@
 import 'package:flutter/material.dart';
 
 class CustomButton {
-  ButtonStyle btnStyle() {
+  ButtonStyle btnStyle({bool isEnabled = true}) {
     return ElevatedButton.styleFrom(
       backgroundColor: Colors.white,
       minimumSize: const Size(double.infinity, 50),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: const BorderSide(color: Colors.black, width: 2),
+        side: BorderSide(
+          color: isEnabled ? Colors.black : Colors.grey,
+          width: 2,
+        ),
       ),
     );
   }
 
   Widget btnSignUp({
-    required void Function()? onPressed, // Nullable function
+    required void Function()? onPressed,
     required String label,
     String? iconPath,
     double iconWidth = 30,
     double iconHeight = 30,
+    bool isEnabled = true,
   }) {
     return ElevatedButton.icon(
-      onPressed: onPressed, // Now works with nullable function
-      icon: Image.asset(
-        iconPath!,
-        width: iconWidth,
-        height: iconHeight,
-        fit: BoxFit.contain,
-      ),
+      onPressed: isEnabled ? onPressed : null,
+      icon: iconPath != null
+          ? Image.asset(
+              iconPath,
+              width: iconWidth,
+              height: iconHeight,
+              fit: BoxFit.contain,
+            )
+          : const SizedBox.shrink(),
       label: Text(
         label,
-        style: const TextStyle(color: Colors.black, fontSize: 15),
+        style: TextStyle(
+          color: isEnabled ? Colors.black : Colors.grey,
+          fontSize: 15,
+        ),
       ),
-      style: btnStyle(),
+      style: btnStyle(isEnabled: isEnabled),
     );
   }
 }

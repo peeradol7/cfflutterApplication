@@ -37,7 +37,7 @@ class AppRoutes {
   static const String knowledgeDetail = '/knowledgeDetail';
 
   static final GoRouter router = GoRouter(
-    initialLocation: homePage,
+    initialLocation: landingPage,
     routes: [
       GoRoute(
         path: landingPage,

@@ -21,6 +21,7 @@ class UserController extends GetxController {
   final formKey = GlobalKey<FormState>();
   RxBool isLoading = false.obs;
   RxBool isSaving = false.obs;
+  RxBool isApprove = false.obs;
 
   Future<void> loadUserFromPrefs() async {
     isLoading.value = true;

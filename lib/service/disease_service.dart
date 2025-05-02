@@ -67,6 +67,7 @@ class DiseaseService {
       DiseaseModel result = DiseaseModel(
         id: diseaseId,
         type: type,
+        info: diseaseData['info'] ?? '',
         recommendations: recommendationsList,
       );
 
