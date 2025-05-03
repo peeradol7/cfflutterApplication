@@ -227,7 +227,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return InkWell(
       onTap: () async {
         if (isEnabled) {
-          await _controller.loadIsSurveyCompleted();
           onTap();
         } else {
           AppSnackbar.error(
