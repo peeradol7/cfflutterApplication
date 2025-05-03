@@ -53,7 +53,6 @@ class CalendarController extends GetxController {
       for (int i = 1; i <= 12; i++) {
         DateTime nextDate = originalDate.add(Duration(days: 28 * i));
         allPredictedPeriods.add(nextDate);
-        print('From $originalDate → Cycle $i: $nextDate');
       }
     }
 

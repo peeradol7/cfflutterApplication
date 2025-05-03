@@ -74,6 +74,7 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
     });
     final userId = controller.userData.value!.userId;
     controller.fetchUserDataById(userId!);
+    controller.loadIsSurveyCompleted();
     super.dispose();
   }
 
@@ -252,6 +253,7 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
                           child: ElevatedButton(
                             onPressed: () {
                               generateAndOpenPDF(context);
+                              controller.loadIsSurveyCompleted();
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.transparent,

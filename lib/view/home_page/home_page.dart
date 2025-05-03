@@ -1,8 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fam_care/app_routes.dart';
 import 'package:fam_care/constatnt/app_colors.dart';
 import 'package:fam_care/controller/user_controller.dart';
 import 'package:fam_care/service/knowledge_service.dart';
+import 'package:fam_care/service/shared_prefercense_service.dart';
 import 'package:fam_care/view/home_page/widget/logout_dialog_widget.dart';
 import 'package:fam_care/view/home_page/widget/person_data_widget.dart';
 import 'package:flutter/material.dart';
@@ -21,60 +21,15 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final UserController _controller = Get.put(UserController());
   final service = KnowledgeService();
+  final pref = SharedPrefercenseService();
+  bool? isSurveyCompleted;
 
   @override
   void initState() {
     super.initState();
     _controller.loadUserFromPrefs();
     service.getKnowledgeTitles();
-  }
-
-  Future<bool> getIsSelect() async {
-    _controller.userData.value!.isServeyCompleted ?? false;
-    return _controller.userData.value!.isServeyCompleted;
-  }
-
-  Future<void> addKnowledge() async {
-    final knowledgeData = {
-      "title": "ยาคุมกำเนิดชนิดฮอร์โมนรวม (Combined Hormonal Contraceptives)",
-      "subtopics": [
-        {
-          "order": 1,
-          "subtitle": "คืออะไร",
-          "content":
-              """วิธีคุมกำเนิดที่มีฮอร์โมนเอสโตรเจนและโปรเจสโตเจนผสมกัน เช่น ยาเม็ดคุมกำเนิดชนิดฮอร์โมนรวม,
-แผ่นแปะคุมกำเนิด,วงแหวนช่องคลอด และยาคุมแบบฉีดเดือนละครั้ง โดยฮอร์โมนทั้งสองชนิดจะทำงานร่วมกันเพื่อ
-ยับยั้งการตกไข่และป้องกันการตั้งครรภ์""",
-        },
-        {
-          "order": 2,
-          "subtitle": "สิ่งที่ควรรู้ก่อนใช้",
-          "content":
-              """ต้องใช้ให้สม่ำเสมอตามกำหนดเวลา (เช่น กินยาเม็ดทุกวัน เปลี่ยนแผ่นแปะทุกสัปดาห์ หรือใส่วง
-แหวน/ฉีดยาทุกเดือนตามชนิดที่เลือก) ไม่เหมาะสำหรับสตรีที่ให้นมบุตรในช่วงหลังคลอดใหม่ๆ เพราะเอสโตรเจน
-อาจทำให้น้ำนมลดลงได้นอกจากนี้ ผู้หญิงอายุเกิน 35 ปีที่สูบบุหรี่หนักควรหลีกเลี่ยงวิธีฮอร์โมนรวม เนื่องจากเพิ่ม
-ความเสี่ยงต่อผลข้างเคียงรุนแรงบางอย่าง (ควรปรึกษาแพทย์หากมีโรคประจำตัวหรือปัจจัยเสี่ยงอื่นๆเช่น ความดัน
-โลหิตสูง หรือไมเกรนรุนแรงก่อนใช้)
-""",
-        },
-        {
-          "order": 3,
-          "subtitle": "ผลข้างเคียงที่อี่นอาจเกิดขึ้น",
-          "content":
-              "ต้องใช้ให้สม่ำเสมอตามกำหนดเวลา (เช่น กินยาเม็ดทุกวัน เปลี่ยนแผ่นแปะทุกสัปดาห์ หรือใส่วงแหวน/ฉีดยาทุกเดือนตามชนิดที่เลือก) ไม่เหมาะส าหรับสตรีที่ให้นมบุตรในช่วงหลังคลอดใหม่ๆ เพราะเอสโตรเจนอาจทำให้น้ำนมลดลงได้นอกจากนี้ ผู้หญิงอายุเกิน 35 ปีที่สูบบุหรี่หนักควรหลีกเลี่ยงวิธีฮอร์โมนรวม เนื่องจากเพิ่มความเสี่ยงต่อผลข้างเคียงรุนแรงบางอย่าง (ควรปรึกษาแพทย์หากมีโรคประจำตัวหรือปัจจัยเสี่ยงอื่นๆ เช่น ความดันโลหิตสูง หรือไมเกรนรุนแรงก่อนใช้)",
-        }
-      ]
-    };
-
-    try {
-      await FirebaseFirestore.instance
-          .collection('knowledge')
-          .doc('1')
-          .set(knowledgeData);
-      print("✅ ข้อมูลถูกบันทึกเรียบร้อยแล้ว");
-    } catch (e) {
-      print("❌ เกิดข้อผิดพลาด: $e");
-    }
+    _controller.loadIsSurveyCompleted();
   }
 
   @override
@@ -208,8 +163,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 },
                                 isEnabled: true),
                             SizedBox(height: 16),
-                            Obx(() {
-                              return Column(
+                            Obx(
+                              () => Column(
                                 children: [
                                   _buildServiceCard(
                                       context: context,
@@ -220,8 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         context
                                             .push(AppRoutes.selectDiseasePage);
                                       },
-                                      isEnabled:
-                                          _controller.isSurveyCompleted.value),
+                                      isEnabled: _controller.isEnable.value),
                                   SizedBox(height: 16),
                                   _buildServiceCard(
                                     context: context,
@@ -231,8 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     onTap: () {
                                       context.push(AppRoutes.calendarPage);
                                     },
-                                    isEnabled:
-                                        _controller.isSurveyCompleted.value,
+                                    isEnabled: _controller.isEnable.value,
                                   ),
                                   SizedBox(height: 16),
                                   _buildServiceCard(
@@ -243,12 +196,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                     onTap: () {
                                       context.push(AppRoutes.knowledge);
                                     },
-                                    isEnabled:
-                                        _controller.isSurveyCompleted.value,
+                                    isEnabled: _controller.isEnable.value,
                                   ),
                                 ],
-                              );
-                            }),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -273,15 +225,17 @@ class _HomeScreenState extends State<HomeScreen> {
     required bool isEnabled,
   }) {
     return InkWell(
-      onTap: isEnabled
-          ? onTap
-          : () {
-              print(isEnabled);
-              AppSnackbar.error(
-                context,
-                'กรุณาทำแบบสอบถามก่อนใช้งาน',
-              );
-            },
+      onTap: () async {
+        if (isEnabled) {
+          await _controller.loadIsSurveyCompleted();
+          onTap();
+        } else {
+          AppSnackbar.error(
+            context,
+            'กรุณาทำแบบสอบถามก่อน',
+          );
+        }
+      },
       borderRadius: BorderRadius.circular(16),
       child: Container(
         decoration: BoxDecoration(

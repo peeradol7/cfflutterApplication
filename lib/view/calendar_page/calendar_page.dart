@@ -33,6 +33,24 @@ class _CalendarPageState extends State<CalendarPage> {
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: AppColors.primary,
+                width: 2,
+              ),
+            ),
+            child: TextButton(
+              onPressed: () {},
+              child: Text(
+                'สภาวะที่เกิดกับร่ำงกำยต่อวัน',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
           Obx(() => IconButton(
                 icon: Icon(
                     _controller.isEditMode.value ? Icons.check : Icons.edit),

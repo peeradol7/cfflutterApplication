@@ -23,6 +23,7 @@ class UserController extends GetxController {
   RxBool isSaving = false.obs;
   RxBool isApprove = false.obs;
   RxBool isSurveyCompleted = false.obs;
+  var isEnable = false.obs;
 
   Future<void> loadUserFromPrefs() async {
     isLoading.value = true;
@@ -36,6 +37,8 @@ class UserController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    loadUserFromPrefs();
+    loadIsSurveyCompleted();
     ever(birthDate, (_) {
       if (birthDate.value != null) {
         birthDateController.text =
@@ -163,6 +166,20 @@ class UserController extends GetxController {
       print('Error updating isSurveyCompleted: $e');
       return false;
     }
+  }
+
+  Future<void> loadIsSurveyCompleted() async {
+    final data = await prefs.getUser();
+    final isSurveyInPref = data?.isServeyCompleted ?? false;
+
+    if (isSurveyCompleted.value == true || isSurveyInPref == true) {
+      isEnable.value = true;
+    } else {
+      isEnable.value = false;
+    }
+
+    // For debugging
+    print('Survey completed status: ${isEnable.value}');
   }
 
   @override

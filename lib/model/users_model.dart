@@ -7,7 +7,7 @@ class UsersModel {
   final String? firstName;
   final String? lastName;
   final String authMethod;
-  bool isServeyCompleted;
+  bool? isServeyCompleted;
   final DateTime? birthDay;
 
   UsersModel({
@@ -18,7 +18,7 @@ class UsersModel {
     this.firstName,
     this.lastName,
     this.birthDay,
-    this.isServeyCompleted = false,
+    this.isServeyCompleted,
   });
 
   Map<String, dynamic> toJson() {
