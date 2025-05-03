@@ -1,4 +1,6 @@
 import 'package:fam_care/view/calendar_page/calendar_page.dart';
+import 'package:fam_care/view/calendar_page/health_data_page.dart';
+import 'package:fam_care/view/calendar_page/health_option_page.dart';
 import 'package:fam_care/view/disease/disease_detail_page.dart';
 import 'package:fam_care/view/disease/select_disease_page.dart';
 import 'package:fam_care/view/disease/summary_page.dart';
@@ -35,6 +37,8 @@ class AppRoutes {
   static const String summaryPage = '/summaryPage';
   static const String knowledge = '/knowledge';
   static const String knowledgeDetail = '/knowledgeDetail';
+  static const String healthOption = '/healthOption';
+  static const String healthDataPage = '/healthDataPage';
 
   static final GoRouter router = GoRouter(
     initialLocation: landingPage,
@@ -92,6 +96,14 @@ class AppRoutes {
       GoRoute(
         path: surveyPage,
         builder: (context, state) => ContraceptionFormPage(),
+      ),
+      GoRoute(
+        path: healthOption,
+        builder: (context, state) => HealthOptionPage(),
+      ),
+      GoRoute(
+        path: healthDataPage,
+        builder: (context, state) => HealthDataPage(),
       ),
       GoRoute(
         path: '$diseaseDetail/:id',

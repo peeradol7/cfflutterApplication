@@ -1,8 +1,10 @@
+import 'package:fam_care/app_routes.dart';
 import 'package:fam_care/constatnt/app_colors.dart';
 import 'package:fam_care/controller/calendar_controller.dart';
 import 'package:fam_care/service/shared_prefercense_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarPage extends StatefulWidget {
@@ -36,16 +38,20 @@ class _CalendarPageState extends State<CalendarPage> {
           Container(
             decoration: BoxDecoration(
               border: Border.all(
-                color: AppColors.primary,
-                width: 2,
+                color: AppColors.colorButton,
+                width: 3,
               ),
+              borderRadius: BorderRadius.circular(20),
             ),
             child: TextButton(
-              onPressed: () {},
+              onPressed: () {
+                context.push(AppRoutes.healthDataPage);
+              },
               child: Text(
                 'สภาวะที่เกิดกับร่ำงกำยต่อวัน',
                 style: TextStyle(
                   color: Colors.white,
+                  fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
               ),
@@ -141,7 +147,7 @@ class _CalendarPageState extends State<CalendarPage> {
                             shape: BoxShape.circle,
                           ),
                           holidayTextStyle: TextStyle(
-                            color: Colors.black, // Default text color
+                            color: Colors.black,
                           ),
                         ),
                         holidayPredicate: (day) {

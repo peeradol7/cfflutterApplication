@@ -7,8 +7,8 @@ class SharedPrefercenseService {
   static const String userKey = "user_data";
   static const String dateKey = 'menstrualdates';
 
-  Future<void> instance() async {
-    SharedPreferences.getInstance();
+  Future<SharedPreferences> instance() async {
+    return await SharedPreferences.getInstance();
   }
 
   static Future<void> saveUser(UsersModel user) async {
@@ -43,7 +43,6 @@ class SharedPrefercenseService {
     final userJson = prefs.getString(userKey);
 
     if (userJson == null) {
-      print("User data not found in SharedPreferences.");
       return null;
     }
 
