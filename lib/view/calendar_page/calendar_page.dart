@@ -48,7 +48,7 @@ class _CalendarPageState extends State<CalendarPage> {
                 context.push(AppRoutes.healthDataPage);
               },
               child: Text(
-                'สภาวะที่เกิดกับร่ำงกำยต่อวัน',
+                'สภาวะที่เกิดกับร่างกำยต่อวัน',
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,

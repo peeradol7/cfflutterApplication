@@ -29,7 +29,12 @@ class SurveyConstants {
     'role': {
       'label': 'คุณเป็นบุคคลทั่วไปหรือผู้ป่วยของโรงพยาบาล ',
       'type': 'radio',
-      'options': ['ผู้ป่วยของโรงพยาบาล', 'บุคคลทั่วไป'],
+      'options': [
+        'บุคคลทั่วไป',
+        'บุคลากรทางการแพทย์',
+        'ผู้ป่าวยของรพ. (บันทึกข้อมูลเอง)',
+        'ผู้ป่าวยของรพ.\n(บุคลากรทางการแพทย์ช่วยบันทึกข้อมูล)'
+      ],
     },
     'marital_status': {
       'label': 'สถานภาพการสมรส:',
@@ -83,10 +88,16 @@ class SurveyConstants {
         'อื่นๆ'
       ],
     },
-    'current_situation_other': {
-      'label': 'โปรดระบุสถานการณ์อื่นๆ:',
+    'history_drug_allergy': {
+      'label': 'คุณมีประวัตัการแก้ยาไหม:',
+      'type': 'radio',
+      'options': ['มี', 'ไม่มี'],
+    },
+    'history_drug_allergy_detail': {
+      'label': 'โปรดระบุ',
       'type': 'text',
-      'dependent_on': {'current_situation': 'อื่นๆ'},
+      'placeholder': 'โปรดระบุยาที่แพ้',
+      'dependent_on': {'history_drug_allergy': 'มี'},
     },
   };
 

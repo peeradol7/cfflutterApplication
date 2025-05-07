@@ -321,7 +321,20 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
         dependencies.forEach((depKey, depValue) {
           if (depKey.startsWith('reason_for_contraception') ||
               depKey.startsWith('previous_methods') ||
-              depKey.startsWith('important_factors')) {
+              depKey.startsWith('important_factors') ||
+              depKey.startsWith('knowledge_methods') ||
+              depKey.startsWith('health_issues') ||
+              depKey.startsWith('side_effects') ||
+              depKey.startsWith('plan_contraception') ||
+              depKey.startsWith('planned_duration') ||
+              depKey.startsWith('current_situation') ||
+              depKey.startsWith('side_effects_detail') ||
+              depKey.startsWith('history_drug_allergy_detail') ||
+              depKey.startsWith('reversible_method') ||
+              depKey.startsWith('hormone_side_effects') ||
+              depKey.startsWith('interested_method') ||
+              depKey.startsWith('consulted_expert') ||
+              depKey.startsWith('want_consultation')) {
             if (!multipleSelectionAnswers.containsKey(depKey) ||
                 !multipleSelectionAnswers[depKey]!.contains(depValue)) {
               shouldDisplay = false;
@@ -393,6 +406,11 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
         } else if (data['type'] == 'checkbox' ||
             data['type'] == 'checkbox_limited') {
           List<String> selectedOptions = multipleSelectionAnswers[key] ?? [];
+
+          if (selectedOptions.contains('ไม่รู้จักเลย')) {
+            selectedOptions = ['ไม่รู้จักเลย'];
+          }
+
           if (selectedOptions.isNotEmpty) {
             fields.add(
               pw.Padding(
@@ -602,7 +620,11 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
           if (depKey.startsWith('reason_for_contraception') ||
               depKey.startsWith('previous_methods') ||
               depKey.startsWith('important_factors') ||
-              depKey.startsWith('current_situation')) {
+              depKey.startsWith('current_situation') ||
+              depKey.startsWith('side_effects_detail') ||
+              depKey.startsWith('history_drug_allergy_detail') ||
+              depKey.startsWith('plan_contraception') ||
+              depKey.startsWith('planned_duration')) {
             if (!multipleSelectionAnswers.containsKey(depKey) ||
                 !multipleSelectionAnswers[depKey]!.contains(depValue)) {
               shouldDisplay = false;
@@ -878,62 +900,29 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
                                   false,
                               onChanged: (bool? value) {
                                 setState(() {
-                                  if (!multipleSelectionAnswers
-                                      .containsKey(key)) {
-                                    multipleSelectionAnswers[key] = [];
-                                  }
+                                  multipleSelectionAnswers[key] ??= [];
 
-                                  // Special handling for "ไม่รู้จักเลย" option
-                                  if (key == 'knowledge_methods') {
-                                    if (option == 'ไม่รู้จักเลย') {
-                                      if (value == true) {
-                                        // Clear all other selections and just select "ไม่รู้จักเลย"
-                                        multipleSelectionAnswers[key] = [
-                                          'ไม่รู้จักเลย'
-                                        ];
-                                      } else {
-                                        // If unchecking "ไม่รู้จักเลย", just remove it
-                                        multipleSelectionAnswers[key]!
-                                            .remove('ไม่รู้จักเลย');
-                                      }
+                                  bool isUnknownOption =
+                                      option == 'ไม่รู้จักเลย';
+
+                                  if (isUnknownOption) {
+                                    if (value == true) {
+                                      // เลือก "ไม่รู้จักเลย" -> ล้างตัวเลือกอื่น
+                                      multipleSelectionAnswers[key] = [
+                                        'ไม่รู้จักเลย'
+                                      ];
                                     } else {
-                                      if (value == true) {
-                                        // If selecting any other option, remove "ไม่รู้จักเลย" if it exists
-                                        multipleSelectionAnswers[key]!
-                                            .remove('ไม่รู้จักเลย');
-                                        // Add the selected option
-                                        if (multipleSelectionAnswers[key]!
-                                                    .length <
-                                                maxSelection ||
-                                            maxSelection == 999) {
-                                          multipleSelectionAnswers[key]!
-                                              .add(option);
-                                        } else {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                SurveyConstants
-                                                    .MAX_SELECTION_WARNING
-                                                    .replaceAll(
-                                                        '{max}',
-                                                        maxSelection
-                                                            .toString()),
-                                              ),
-                                              duration: Duration(seconds: 2),
-                                              backgroundColor: AppColors.color3,
-                                            ),
-                                          );
-                                        }
-                                      } else {
-                                        // If unchecking any option, just remove it
-                                        multipleSelectionAnswers[key]!
-                                            .remove(option);
-                                      }
+                                      // ยกเลิก "ไม่รู้จักเลย"
+                                      multipleSelectionAnswers[key]!
+                                          .remove('ไม่รู้จักเลย');
                                     }
                                   } else {
-                                    // Normal checkbox behavior for other fields
+                                    // ถ้ามี "ไม่รู้จักเลย" อยู่ -> ลบออกก่อน
+                                    multipleSelectionAnswers[key]!
+                                        .remove('ไม่รู้จักเลย');
+
                                     if (value == true) {
+                                      // ตรวจสอบ max selection
                                       if (multipleSelectionAnswers[key]!
                                                   .length <
                                               maxSelection ||
@@ -941,6 +930,7 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
                                         multipleSelectionAnswers[key]!
                                             .add(option);
                                       } else {
+                                        // เตือนถ้าเกินจำนวนที่อนุญาต
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
                                           SnackBar(
@@ -956,6 +946,7 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
                                         );
                                       }
                                     } else {
+                                      // ยกเลิกเลือก
                                       multipleSelectionAnswers[key]!
                                           .remove(option);
                                     }
@@ -1115,6 +1106,8 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
       sideEffects: healthAnswers['side_effects'] ?? 'ไม่ได้ป้อนข้อมูล',
       planContraception:
           planningAnswers['plan_contraception'] ?? 'ไม่ได้ป้อนข้อมูล',
+      historyDrugAllergy:
+          healthAnswers['history_drug_allergy'] ?? 'ไม่ได้ป้อนข้อมูล',
       plannedDuration:
           planningAnswers['planned_duration'] ?? 'ไม่ได้ป้อนข้อมูล',
       knowledge: knowledgeAnswers['knowledge'] ?? 'ไม่ได้ป้อนข้อมูล',

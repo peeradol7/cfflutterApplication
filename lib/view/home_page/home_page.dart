@@ -155,7 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             SizedBox(height: 20),
                             _buildServiceCard(
                                 context: context,
-                                title: 'ทำแบบสอบถาม',
+                                title: 'กรอกข้อมูลส่วนตัว',
                                 icon: Icons.assignment_rounded,
                                 color: AppColors.color5,
                                 onTap: () {
@@ -231,7 +231,7 @@ class _HomeScreenState extends State<HomeScreen> {
         } else {
           AppSnackbar.error(
             context,
-            'กรุณาทำแบบสอบถามก่อน',
+            'กรุณากรอกข้อมูลส่วนตัวก่อน',
           );
         }
       },

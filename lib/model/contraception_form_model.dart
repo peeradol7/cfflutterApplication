@@ -18,6 +18,7 @@ class ContraceptionFormModel {
   final String interestedMethod;
   final String consultedExpert;
   final String wantConsultation;
+  final String historyDrugAllergy;
 
   ContraceptionFormModel({
     required this.role,
@@ -39,6 +40,7 @@ class ContraceptionFormModel {
     required this.interestedMethod,
     required this.consultedExpert,
     required this.wantConsultation,
+    required this.historyDrugAllergy,
   });
 
   factory ContraceptionFormModel.fromMap(Map<String, dynamic> map) {
@@ -62,6 +64,7 @@ class ContraceptionFormModel {
       interestedMethod: map['interested_method'],
       consultedExpert: map['consulted_expert'],
       wantConsultation: map['want_consultation'],
+      historyDrugAllergy: map['history_drug_allergy'],
     );
   }
 
@@ -86,6 +89,7 @@ class ContraceptionFormModel {
       'interested_method': interestedMethod,
       'consulted_expert': consultedExpert,
       'want_consultation': wantConsultation,
+      'history_drug_allergy': historyDrugAllergy,
     };
   }
 }
