@@ -1,4 +1,5 @@
 import 'package:fam_care/controller/health_controller.dart';
+import 'package:fam_care/service/shared_prefercense_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
@@ -7,7 +8,11 @@ import '../../app_routes.dart';
 import '../../constatnt/app_colors.dart';
 
 class HealthDataPage extends StatefulWidget {
-  const HealthDataPage({Key? key}) : super(key: key);
+  final String id;
+  const HealthDataPage({
+    Key? key,
+    required this.id,
+  }) : super(key: key);
 
   @override
   _HealthDataPageState createState() => _HealthDataPageState();
@@ -15,11 +20,18 @@ class HealthDataPage extends StatefulWidget {
 
 class _HealthDataPageState extends State<HealthDataPage> {
   final controller = Get.find<HealthController>();
-
+  final pref = SharedPrefercenseService();
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchHealthDataByDate(widget.id);
+    });
     super.initState();
-    controller.loadData();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -29,6 +41,10 @@ class _HealthDataPageState extends State<HealthDataPage> {
         title: const Text('ข้อมูลสุขภาพของคุณ',
             style: TextStyle(color: Colors.white)),
         backgroundColor: AppColors.primary,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+          onPressed: () => context.pop(),
+        ),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,42 +52,55 @@ class _HealthDataPageState extends State<HealthDataPage> {
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
-              child: Obx(() => Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildCategorySection('อารมณ์', controller.selectedMoods),
-                      _buildCategorySection(
-                          'อาการ', controller.selectedSymptoms),
-                      _buildCategorySection(
-                          'พฤติกรรมที่เปลี่ยนไป', controller.selectedBehaviors),
-                      _buildCategorySection(
-                          'อาการตกขาว', controller.selectedDischarge),
-                      _buildCategorySection(
-                          'เพศสัมพันธ์', controller.selectedSexualActivity),
-                    ],
-                  )),
+              child: Obx(() => controller.isLoading.value == true
+                  ? CircularProgressIndicator()
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildCategorySection(
+                            'อารมณ์',
+                            controller.healthDataDetail.value?.selectedMoods ??
+                                []),
+                        _buildCategorySection(
+                            'อาการ',
+                            controller
+                                    .healthDataDetail.value?.selectedSymptoms ??
+                                []),
+                        _buildCategorySection('พฤติกรรมที่เปลี่ยนไป',
+                            controller.selectedBehaviors),
+                        _buildCategorySection(
+                            'อาการตกขาว',
+                            controller.healthDataDetail.value
+                                    ?.selectedBehaviors ??
+                                []),
+                        _buildCategorySection(
+                            'เพศสัมพันธ์',
+                            controller.healthDataDetail.value?.sexualActivity ??
+                                []),
+                      ],
+                    )),
             ),
           ),
           Center(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: SizedBox(
-                width: double.infinity, // ทำให้ปุ่มกว้างสุดเท่ากับหน้าจอ
+                width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 20), // เพิ่มความสูง
+                    padding: const EdgeInsets.symmetric(vertical: 20),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () {
-                    context.push(AppRoutes.healthOption);
+                  onPressed: () async {
+                    final id = widget.id;
+                    context.push('${AppRoutes.healthOption}/$id');
                   },
                   child: const Text(
-                    'ประเมินสุขภาพ',
+                    'แก้ไขข้อมูล',
                     style: TextStyle(fontSize: 18), // ปรับขนาดตัวอักษร
                   ),
                 ),

@@ -912,17 +912,14 @@ class _ContraceptionSurveyPageState extends State<ContraceptionFormPage> {
                                         'ไม่รู้จักเลย'
                                       ];
                                     } else {
-                                      // ยกเลิก "ไม่รู้จักเลย"
                                       multipleSelectionAnswers[key]!
                                           .remove('ไม่รู้จักเลย');
                                     }
                                   } else {
-                                    // ถ้ามี "ไม่รู้จักเลย" อยู่ -> ลบออกก่อน
                                     multipleSelectionAnswers[key]!
                                         .remove('ไม่รู้จักเลย');
 
                                     if (value == true) {
-                                      // ตรวจสอบ max selection
                                       if (multipleSelectionAnswers[key]!
                                                   .length <
                                               maxSelection ||

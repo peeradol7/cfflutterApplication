@@ -45,8 +45,6 @@ class CalendarController extends GetxController {
         .toList()
       ..sort();
 
-    print('Debug: Sorted Dates = $sortedDates');
-
     List<DateTime> allPredictedPeriods = [];
 
     for (DateTime originalDate in sortedDates) {
@@ -57,9 +55,6 @@ class CalendarController extends GetxController {
     }
 
     allPredictedPeriods.sort();
-
-    print(
-        'Predicted Period Dates (12 rounds for each input) → $allPredictedPeriods');
 
     return allPredictedPeriods;
   }

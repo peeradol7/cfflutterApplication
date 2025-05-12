@@ -48,7 +48,7 @@ class DisplayDiseaseList extends StatelessWidget {
                     margin: EdgeInsets.all(8.0),
                     child: ListTile(
                       title: Text(
-                        disease.type,
+                        '${disease.seq} ${disease.type}',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       trailing: disease.info != null && disease.info!.isNotEmpty

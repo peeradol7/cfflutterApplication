@@ -14,6 +14,7 @@ import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'app_routes.dart';
+import 'service/shared_prefercense_service.dart';
 
 void main() async {
   await initializeDateFormatting('th', null);
@@ -21,6 +22,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  SharedPrefercenseService().instance();
   Get.put(DiseaseController());
   Get.put(MenuBarController());
   Get.put(GoogleAuthController());

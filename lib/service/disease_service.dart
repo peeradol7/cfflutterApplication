@@ -10,7 +10,7 @@ class DiseaseService {
   Future<List<DiseaseModel>> fetchAllDiseases() async {
     try {
       QuerySnapshot querySnapshot =
-          await _firestore.collection(diseaseCollection).get();
+          await _firestore.collection(diseaseCollection).orderBy('seq').get();
 
       return querySnapshot.docs
           .map(
@@ -66,6 +66,7 @@ class DiseaseService {
 
       DiseaseModel result = DiseaseModel(
         id: diseaseId,
+        seq: index,
         type: type,
         info: diseaseData['info'] ?? '',
         recommendations: recommendationsList,

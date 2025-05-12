@@ -1,12 +1,14 @@
 class DiseaseModel {
   String id;
   String type;
+  int seq;
   final String? info;
   List<Recommendation> recommendations;
 
   DiseaseModel({
     required this.id,
     required this.info,
+    required this.seq,
     required this.type,
     required this.recommendations,
   });
@@ -14,6 +16,7 @@ class DiseaseModel {
   factory DiseaseModel.fromJson(Map<String, dynamic> json, String id) {
     return DiseaseModel(
       id: id,
+      seq: json['seq'] ?? 0,
       type: json['type'] ?? '',
       info: json['info'] ?? '',
       recommendations: (json['recommendations'] as List<dynamic>?)

@@ -1,5 +1,6 @@
 import 'package:fam_care/view/calendar_page/calendar_page.dart';
 import 'package:fam_care/view/calendar_page/health_data_page.dart';
+import 'package:fam_care/view/calendar_page/health_list.dart';
 import 'package:fam_care/view/calendar_page/health_option_page.dart';
 import 'package:fam_care/view/disease/disease_detail_page.dart';
 import 'package:fam_care/view/disease/select_disease_page.dart';
@@ -39,6 +40,9 @@ class AppRoutes {
   static const String knowledgeDetail = '/knowledgeDetail';
   static const String healthOption = '/healthOption';
   static const String healthDataPage = '/healthDataPage';
+  static const String healthDataDetail = '/healthDataDetail';
+  static const String healthDataList = '/healthDataList';
+  static const String create = '/healthCreate';
 
   static final GoRouter router = GoRouter(
     initialLocation: landingPage,
@@ -98,12 +102,35 @@ class AppRoutes {
         builder: (context, state) => ContraceptionFormPage(),
       ),
       GoRoute(
-        path: healthOption,
-        builder: (context, state) => HealthOptionPage(),
+        path: '$healthOption/:id',
+        builder: (context, state) {
+          final healthId = state.pathParameters['id'] ?? '';
+
+          return HealthOptionPage(
+            id: healthId,
+          );
+        },
       ),
       GoRoute(
-        path: healthDataPage,
-        builder: (context, state) => HealthDataPage(),
+        path: create,
+        builder: (context, state) {
+          final healthId = state.pathParameters['id'] ?? '';
+
+          return HealthOptionPage(
+            id: healthId,
+          );
+        },
+      ),
+      GoRoute(
+          path: '$healthDataPage/:id',
+          builder: (context, state) {
+            final healthId = state.pathParameters['id'] ?? '';
+            print('*****$healthId');
+            return HealthDataPage(id: healthId);
+          }),
+      GoRoute(
+        path: healthDataList,
+        builder: (context, state) => HealthList(),
       ),
       GoRoute(
         path: '$diseaseDetail/:id',
